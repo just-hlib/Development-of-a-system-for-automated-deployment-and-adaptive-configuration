@@ -1,0 +1,104 @@
+{
+  "manifests": [
+    {
+      "id": "vscode",
+      "name": "Visual Studio Code",
+      "winget_id": "Microsoft.VisualStudioCode",
+      "version": "latest",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "ide",
+      "description": "Потужний редактор коду від Microsoft",
+      "size_mb": 150
+    },
+    {
+      "id": "git",
+      "name": "Git",
+      "winget_id": "Git.Git",
+      "version": "latest",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "vcs",
+      "description": "Система контролю версій",
+      "size_mb": 50
+    },
+    {
+      "id": "chrome",
+      "name": "Google Chrome",
+      "winget_id": "Google.Chrome",
+      "version": "latest",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "browser",
+      "description": "Популярний браузер від Google",
+      "size_mb": 120
+    },
+    {
+      "id": "python",
+      "name": "Python 3.12",
+      "winget_id": "Python.Python.3.12",
+      "version": "3.12",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "runtime",
+      "description": "Мова програмування Python",
+      "size_mb": 80
+    },
+    {
+      "id": "nodejs",
+      "name": "Node.js LTS",
+      "winget_id": "OpenJS.NodeJS.LTS",
+      "version": "lts",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "runtime",
+      "description": "JavaScript runtime для бекенду",
+      "size_mb": 90
+    },
+    {
+      "id": "steam",
+      "name": "Steam",
+      "winget_id": "Valve.Steam",
+      "version": "latest",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "gaming",
+      "description": "Платформа для ігор від Valve",
+      "size_mb": 200
+    },
+    {
+      "id": "discord",
+      "name": "Discord",
+      "winget_id": "Discord.Discord",
+      "version": "latest",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "communication",
+      "description": "Голосовий та текстовий чат для геймерів",
+      "size_mb": 130
+    },
+    {
+      "id": "figma",
+      "name": "Figma",
+      "winget_id": "Figma.Figma",
+      "version": "latest",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "design",
+      "description": "Інструмент для UI/UX дизайну",
+      "size_mb": 180
+    },
+    {
+      "id": "obs",
+      "name": "OBS Studio",
+      "winget_id": "OBSProject.OBSStudio",
+      "version": "latest",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "streaming",
+      "description": "Запис та стрімінг відео",
+      "size_mb": 250
+    },
+    {
+      "id": "postman",
+      "name": "Postman",
+      "winget_id": "Postman.Postman",
+      "version": "latest",
+      "silent_args": "--silent --accept-package-agreements --accept-source-agreements",
+      "category": "dev-tools",
+      "description": "Тестування API запитів",
+      "size_mb": 160
+    }
+  ]
+}

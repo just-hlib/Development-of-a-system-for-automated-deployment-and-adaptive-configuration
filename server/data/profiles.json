@@ -1,0 +1,62 @@
+{
+  "profiles": {
+    "developer": {
+      "display_name": "💻 Developer",
+      "description": "Профіль для розробника: IDE, термінали, мови програмування та dev-tools",
+      "apps": [
+        {"id": "vscode", "required": true},
+        {"id": "git", "required": true},
+        {"id": "python", "required": true},
+        {"id": "nodejs", "required": true},
+        {"id": "chrome", "required": true},
+        {"id": "postman", "required": false}
+      ],
+      "powershell_scripts": [
+        "apply_dark_theme",
+        "enable_developer_mode",
+        "set_execution_policy"
+      ],
+      "configs": {
+        "vscode": "configs/developer.json",
+        "git": "configs/git_developer.json"
+      }
+    },
+    "gamer": {
+      "display_name": "🎮 Gamer",
+      "description": "Профіль для геймера: Steam, Discord, OBS та оптимізація продуктивності",
+      "apps": [
+        {"id": "steam", "required": true},
+        {"id": "discord", "required": true},
+        {"id": "chrome", "required": true},
+        {"id": "obs", "required": false}
+      ],
+      "powershell_scripts": [
+        "apply_dark_theme",
+        "disable_xbox_game_bar",
+        "optimize_gaming_performance",
+        "enable_hardware_acceleration"
+      ],
+      "configs": {
+        "discord": "configs/gamer.json"
+      }
+    },
+    "designer": {
+      "display_name": "🎨 Designer",
+      "description": "Профіль для дизайнера: Figma, Adobe інструменти та налаштування кольору",
+      "apps": [
+        {"id": "figma", "required": true},
+        {"id": "chrome", "required": true},
+        {"id": "discord", "required": false},
+        {"id": "obs", "required": false}
+      ],
+      "powershell_scripts": [
+        "apply_light_theme",
+        "set_color_calibration",
+        "enable_night_light"
+      ],
+      "configs": {
+        "figma": "configs/designer.json"
+      }
+    }
+  }
+}
