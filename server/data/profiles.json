@@ -2,39 +2,54 @@
   "profiles": {
     "developer": {
       "display_name": "💻 Developer",
-      "description": "Профіль для розробника: IDE, термінали, мови програмування та dev-tools",
+      "description": "Середовище розробника: IDE, термінали, мови, dev-tools",
       "apps": [
-        {"id": "vscode", "required": true},
-        {"id": "git", "required": true},
-        {"id": "python", "required": true},
-        {"id": "nodejs", "required": true},
-        {"id": "chrome", "required": true},
-        {"id": "postman", "required": false}
+        {"id": "vscode",    "required": true},
+        {"id": "git",       "required": true},
+        {"id": "python",    "required": true},
+        {"id": "nodejs",    "required": true},
+        {"id": "terminal",  "required": true},
+        {"id": "docker",    "required": false},
+        {"id": "postman",   "required": false},
+        {"id": "dbeaver",   "required": false},
+        {"id": "jetbrains", "required": false},
+        {"id": "putty",     "required": false},
+        {"id": "insomnia",  "required": false},
+        {"id": "chrome",    "required": true},
+        {"id": "7zip",      "required": true},
+        {"id": "powertoys", "required": false}
       ],
       "powershell_scripts": [
         "apply_dark_theme",
         "enable_developer_mode",
-        "set_execution_policy"
+        "set_execution_policy",
+        "disable_telemetry",
+        "enable_ultimate_performance",
+        "configure_uac_developer"
       ],
       "configs": {
-        "vscode": "configs/developer.json",
-        "git": "configs/git_developer.json"
+        "vscode": "configs/developer.json"
       }
     },
     "gamer": {
       "display_name": "🎮 Gamer",
-      "description": "Профіль для геймера: Steam, Discord, OBS та оптимізація продуктивності",
+      "description": "Ігрове середовище: платформи, оптимізація продуктивності",
       "apps": [
-        {"id": "steam", "required": true},
-        {"id": "discord", "required": true},
-        {"id": "chrome", "required": true},
-        {"id": "obs", "required": false}
+        {"id": "steam",      "required": true},
+        {"id": "discord",    "required": true},
+        {"id": "chrome",     "required": true},
+        {"id": "obs",        "required": false},
+        {"id": "7zip",       "required": true},
+        {"id": "epicgames",  "required": false},
+        {"id": "eartrumpet", "required": false},
+        {"id": "sharex",     "required": false}
       ],
       "powershell_scripts": [
         "apply_dark_theme",
         "disable_xbox_game_bar",
+        "enable_ultimate_performance",
         "optimize_gaming_performance",
-        "enable_hardware_acceleration"
+        "disable_telemetry"
       ],
       "configs": {
         "discord": "configs/gamer.json"
@@ -42,21 +57,52 @@
     },
     "designer": {
       "display_name": "🎨 Designer",
-      "description": "Профіль для дизайнера: Figma, Adobe інструменти та налаштування кольору",
+      "description": "Творче середовище: графіка, дизайн, медіа",
       "apps": [
-        {"id": "figma", "required": true},
-        {"id": "chrome", "required": true},
-        {"id": "discord", "required": false},
-        {"id": "obs", "required": false}
+        {"id": "figma",      "required": true},
+        {"id": "gimp",       "required": true},
+        {"id": "inkscape",   "required": false},
+        {"id": "krita",      "required": false},
+        {"id": "blender",    "required": false},
+        {"id": "chrome",     "required": true},
+        {"id": "obs",        "required": false},
+        {"id": "audacity",   "required": false},
+        {"id": "sharex",     "required": true},
+        {"id": "imageglass", "required": false},
+        {"id": "fontbase",   "required": false},
+        {"id": "lively",     "required": false},
+        {"id": "powertoys",  "required": false}
       ],
       "powershell_scripts": [
         "apply_light_theme",
         "set_color_calibration",
-        "enable_night_light"
+        "enable_night_light",
+        "disable_telemetry"
       ],
       "configs": {
         "figma": "configs/designer.json"
       }
+    },
+    "common": {
+      "display_name": "🌐 Common",
+      "description": "Базовий набір для будь-якого користувача",
+      "apps": [
+        {"id": "chrome",      "required": true},
+        {"id": "7zip",        "required": true},
+        {"id": "vlc",         "required": true},
+        {"id": "discord",     "required": false},
+        {"id": "telegram",    "required": false},
+        {"id": "spotify",     "required": false},
+        {"id": "bitwarden",   "required": false},
+        {"id": "notepadpp",   "required": true},
+        {"id": "everything",  "required": false},
+        {"id": "quicklook",   "required": false}
+      ],
+      "powershell_scripts": [
+        "apply_dark_theme",
+        "disable_telemetry"
+      ],
+      "configs": {}
     }
   }
 }
