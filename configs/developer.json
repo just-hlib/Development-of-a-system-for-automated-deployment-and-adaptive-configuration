@@ -6,24 +6,12 @@
     "editor.fontLigatures": true,
     "editor.tabSize": 4,
     "editor.formatOnSave": true,
-    "editor.wordWrap": "on",
     "editor.minimap.enabled": true,
     "editor.bracketPairColorization.enabled": true,
     "workbench.colorTheme": "One Dark Pro",
     "workbench.iconTheme": "material-icon-theme",
-    "terminal.integrated.fontSize": 13,
     "terminal.integrated.defaultProfile.windows": "PowerShell",
     "git.autofetch": true,
-    "git.confirmSync": false,
-    "extensions.autoUpdate": true,
-    "python.defaultInterpreterPath": "python",
     "python.formatting.provider": "black"
-  },
-  "git": {
-    "core.autocrlf": "true",
-    "core.editor": "code --wait",
-    "init.defaultBranch": "main",
-    "pull.rebase": "false",
-    "credential.helper": "manager"
   }
 }

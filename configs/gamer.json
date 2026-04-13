@@ -3,18 +3,9 @@
   "discord": {
     "theme": "dark",
     "fontSize": 16,
-    "messageDisplayCompact": false,
     "showCurrentGame": true,
-    "enableQualityOfLifeFeatures": true,
     "hardware_acceleration": true,
     "open_on_startup": true,
     "minimize_to_tray": true
-  },
-  "windows_optimizations": {
-    "disable_game_bar": true,
-    "high_performance_power_plan": true,
-    "disable_mouse_acceleration": true,
-    "disable_transparency_effects": true,
-    "enable_hardware_accelerated_gpu_scheduling": true
   }
 }

@@ -5,17 +5,12 @@
     "snap_to_pixel": true,
     "show_rulers": true,
     "nudge_amount": 1,
-    "big_nudge_amount": 10,
-    "show_grid": false,
-    "flip_on_drag": true
+    "big_nudge_amount": 10
   },
-  "windows_settings": {
+  "windows": {
     "display_scaling": 125,
     "color_profile": "sRGB",
     "night_light_enabled": true,
-    "night_light_temperature": 4000,
-    "text_size": "normal",
-    "transparency_effects": true,
-    "smooth_edges_fonts": true
+    "transparency_effects": true
   }
 }
