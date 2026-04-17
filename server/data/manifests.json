@@ -1,428 +1,57 @@
 {
   "manifests": [
-    {
-      "id": "edge",
-      "name": "Microsoft Edge",
-      "winget_id": "Microsoft.Edge",
-      "category": "browser",
-      "size_mb": 130,
-      "description": "Браузер від Microsoft"
-    },
-    {
-      "id": "chrome",
-      "name": "Google Chrome",
-      "winget_id": "Google.Chrome",
-      "category": "browser",
-      "size_mb": 120,
-      "description": "Популярний браузер"
-    },
-    {
-      "id": "firefox",
-      "name": "Mozilla Firefox",
-      "winget_id": "Mozilla.Firefox",
-      "category": "browser",
-      "size_mb": 110,
-      "description": "Відкритий браузер"
-    },
-    {
-      "id": "brave",
-      "name": "Brave Browser",
-      "winget_id": "Brave.Brave",
-      "category": "browser",
-      "size_mb": 125,
-      "description": "Браузер з блокуванням реклами"
-    },
-    {
-      "id": "7zip",
-      "name": "7-Zip",
-      "winget_id": "7zip.7zip",
-      "category": "utility",
-      "size_mb": 5,
-      "description": "Архіватор файлів"
-    },
-    {
-      "id": "vlc",
-      "name": "VLC Media Player",
-      "winget_id": "VideoLAN.VLC",
-      "category": "media",
-      "size_mb": 80,
-      "description": "Медіаплеєр"
-    },
-    {
-      "id": "discord",
-      "name": "Discord",
-      "winget_id": "Discord.Discord",
-      "category": "communication",
-      "size_mb": 130,
-      "description": "Голосовий та текстовий чат"
-    },
-    {
-      "id": "spotify",
-      "name": "Spotify",
-      "winget_id": "Spotify.Spotify",
-      "category": "media",
-      "size_mb": 200,
-      "description": "Музичний стрімінг"
-    },
-    {
-      "id": "telegram",
-      "name": "Telegram Desktop",
-      "winget_id": "Telegram.TelegramDesktop",
-      "category": "communication",
-      "size_mb": 90,
-      "description": "Месенджер"
-    },
-    {
-      "id": "winrar",
-      "name": "WinRAR",
-      "winget_id": "RARLab.WinRAR",
-      "category": "utility",
-      "size_mb": 10,
-      "description": "Архіватор RAR"
-    },
-    {
-      "id": "bitwarden",
-      "name": "Bitwarden",
-      "winget_id": "Bitwarden.Bitwarden",
-      "category": "security",
-      "size_mb": 90,
-      "description": "Менеджер паролів"
-    },
-    {
-      "id": "qbittorrent",
-      "name": "qBittorrent",
-      "winget_id": "qBittorrent.qBittorrent",
-      "category": "utility",
-      "size_mb": 60,
-      "description": "Торрент-клієнт"
-    },
-    {
-      "id": "zoom",
-      "name": "Zoom",
-      "winget_id": "Zoom.Zoom",
-      "category": "communication",
-      "size_mb": 150,
-      "description": "Відеоконференції"
-    },
-    {
-      "id": "notepadpp",
-      "name": "Notepad++",
-      "winget_id": "Notepad++.Notepad++",
-      "category": "editor",
-      "size_mb": 15,
-      "description": "Текстовий редактор"
-    },
-    {
-      "id": "everything",
-      "name": "Everything",
-      "winget_id": "voidtools.Everything",
-      "category": "utility",
-      "size_mb": 5,
-      "description": "Швидкий пошук файлів"
-    },
-    {
-      "id": "vscode",
-      "name": "Visual Studio Code",
-      "winget_id": "Microsoft.VisualStudioCode",
-      "category": "ide",
-      "size_mb": 150,
-      "description": "Редактор коду"
-    },
-    {
-      "id": "git",
-      "name": "Git",
-      "winget_id": "Git.Git",
-      "category": "vcs",
-      "size_mb": 50,
-      "description": "Система контролю версій"
-    },
-    {
-      "id": "docker",
-      "name": "Docker Desktop",
-      "winget_id": "Docker.DockerDesktop",
-      "category": "devops",
-      "size_mb": 800,
-      "description": "Контейнеризація"
-    },
-    {
-      "id": "python",
-      "name": "Python 3.12",
-      "winget_id": "Python.Python.3.12",
-      "category": "runtime",
-      "size_mb": 80,
-      "description": "Мова програмування"
-    },
-    {
-      "id": "nodejs",
-      "name": "Node.js LTS",
-      "winget_id": "OpenJS.NodeJS.LTS",
-      "category": "runtime",
-      "size_mb": 90,
-      "description": "JavaScript runtime"
-    },
-    {
-      "id": "golang",
-      "name": "Go Language",
-      "winget_id": "GoLang.Go",
-      "category": "runtime",
-      "size_mb": 120,
-      "description": "Мова Go від Google"
-    },
-    {
-      "id": "postman",
-      "name": "Postman",
-      "winget_id": "Postman.Postman",
-      "category": "dev-tools",
-      "size_mb": 160,
-      "description": "Тестування API"
-    },
-    {
-      "id": "dbeaver",
-      "name": "DBeaver",
-      "winget_id": "dbeaver.dbeaver",
-      "category": "database",
-      "size_mb": 200,
-      "description": "Клієнт баз даних"
-    },
-    {
-      "id": "jetbrains",
-      "name": "JetBrains Toolbox",
-      "winget_id": "JetBrains.Toolbox",
-      "category": "ide",
-      "size_mb": 100,
-      "description": "Менеджер IDE JetBrains"
-    },
-    {
-      "id": "terminal",
-      "name": "Windows Terminal",
-      "winget_id": "Microsoft.WindowsTerminal",
-      "category": "terminal",
-      "size_mb": 30,
-      "description": "Сучасний термінал Windows"
-    },
-    {
-      "id": "jdk",
-      "name": "Oracle JDK 21",
-      "winget_id": "Oracle.JDK.21",
-      "category": "runtime",
-      "size_mb": 300,
-      "description": "Java Development Kit"
-    },
-    {
-      "id": "rust",
-      "name": "Rust",
-      "winget_id": "Rustlang.Rustup",
-      "category": "runtime",
-      "size_mb": 100,
-      "description": "Мова програмування Rust"
-    },
-    {
-      "id": "llvm",
-      "name": "LLVM",
-      "winget_id": "LLVM.LLVM",
-      "category": "dev-tools",
-      "size_mb": 500,
-      "description": "Компілятор LLVM"
-    },
-    {
-      "id": "putty",
-      "name": "PuTTY",
-      "winget_id": "PuTTY.PuTTY",
-      "category": "terminal",
-      "size_mb": 5,
-      "description": "SSH клієнт"
-    },
-    {
-      "id": "insomnia",
-      "name": "Insomnia",
-      "winget_id": "Insomnia.Insomnia",
-      "category": "dev-tools",
-      "size_mb": 150,
-      "description": "REST/GraphQL клієнт"
-    },
-    {
-      "id": "figma",
-      "name": "Figma",
-      "winget_id": "Figma.Figma",
-      "category": "design",
-      "size_mb": 180,
-      "description": "UI/UX дизайн"
-    },
-    {
-      "id": "blender",
-      "name": "Blender",
-      "winget_id": "BlenderFoundation.Blender",
-      "category": "design",
-      "size_mb": 300,
-      "description": "3D моделювання"
-    },
-    {
-      "id": "krita",
-      "name": "Krita",
-      "winget_id": "KDE.Krita",
-      "category": "design",
-      "size_mb": 250,
-      "description": "Цифровий живопис"
-    },
-    {
-      "id": "inkscape",
-      "name": "Inkscape",
-      "winget_id": "Inkscape.Inkscape",
-      "category": "design",
-      "size_mb": 120,
-      "description": "Векторна графіка"
-    },
-    {
-      "id": "gimp",
-      "name": "GIMP",
-      "winget_id": "GIMP.GIMP",
-      "category": "design",
-      "size_mb": 200,
-      "description": "Редактор зображень"
-    },
-    {
-      "id": "sharex",
-      "name": "ShareX",
-      "winget_id": "ShareX.ShareX",
-      "category": "utility",
-      "size_mb": 40,
-      "description": "Скриншоти та запис екрану"
-    },
-    {
-      "id": "imageglass",
-      "name": "ImageGlass",
-      "winget_id": "DuongDieuPhap.ImageGlass",
-      "category": "media",
-      "size_mb": 30,
-      "description": "Переглядач зображень"
-    },
-    {
-      "id": "obs",
-      "name": "OBS Studio",
-      "winget_id": "OBSProject.OBSStudio",
-      "category": "streaming",
-      "size_mb": 250,
-      "description": "Запис та стрімінг"
-    },
-    {
-      "id": "handbrake",
-      "name": "HandBrake",
-      "winget_id": "HandBrake.HandBrake",
-      "category": "media",
-      "size_mb": 80,
-      "description": "Конвертер відео"
-    },
-    {
-      "id": "audacity",
-      "name": "Audacity",
-      "winget_id": "Audacity.Audacity",
-      "category": "media",
-      "size_mb": 50,
-      "description": "Редактор аудіо"
-    },
-    {
-      "id": "fontbase",
-      "name": "FontBase",
-      "winget_id": "FontBase.FontBase",
-      "category": "design",
-      "size_mb": 90,
-      "description": "Менеджер шрифтів"
-    },
-    {
-      "id": "epicgames",
-      "name": "Epic Games Launcher",
-      "winget_id": "EpicGames.EpicGamesLauncher",
-      "category": "gaming",
-      "size_mb": 300,
-      "description": "Лаунчер Epic / Unreal Engine"
-    },
-    {
-      "id": "powertoys",
-      "name": "Microsoft PowerToys",
-      "winget_id": "Microsoft.PowerToys",
-      "category": "customization",
-      "size_mb": 100,
-      "description": "Утиліти продуктивності"
-    },
-    {
-      "id": "lively",
-      "name": "Lively Wallpaper",
-      "winget_id": "rocksdanister.LivelyWallpaper",
-      "category": "customization",
-      "size_mb": 80,
-      "description": "Живі шпалери"
-    },
-    {
-      "id": "files",
-      "name": "Files App",
-      "winget_id": "FilesApp.FilesApp",
-      "category": "customization",
-      "size_mb": 60,
-      "description": "Сучасний файловий менеджер"
-    },
-    {
-      "id": "translucenttb",
-      "name": "TranslucentTB",
-      "winget_id": "CharlesMilette.TranslucentTB",
-      "category": "customization",
-      "size_mb": 5,
-      "description": "Прозора панель завдань"
-    },
-    {
-      "id": "eartrumpet",
-      "name": "EarTrumpet",
-      "winget_id": "File-New-Project.EarTrumpet",
-      "category": "customization",
-      "size_mb": 5,
-      "description": "Керування гучністю"
-    },
-    {
-      "id": "modernflyouts",
-      "name": "ModernFlyouts",
-      "winget_id": "ModernFlyouts.ModernFlyouts",
-      "category": "customization",
-      "size_mb": 10,
-      "description": "Сучасні спливаючі елементи"
-    },
-    {
-      "id": "autodarkmode",
-      "name": "Auto Dark Mode",
-      "winget_id": "Armin2208.WindowsAutoNightMode",
-      "category": "customization",
-      "size_mb": 10,
-      "description": "Автоматична темна тема"
-    },
-    {
-      "id": "nilesoft",
-      "name": "Nilesoft Shell",
-      "winget_id": "Nilesoft.Shell",
-      "category": "customization",
-      "size_mb": 5,
-      "description": "Кастомне контекстне меню"
-    },
-    {
-      "id": "quicklook",
-      "name": "QuickLook",
-      "winget_id": "QL-Win.QuickLook",
-      "category": "utility",
-      "size_mb": 10,
-      "description": "Швидкий перегляд файлів"
-    },
-    {
-      "id": "rainmeter",
-      "name": "Rainmeter",
-      "winget_id": "Rainmeter.Rainmeter",
-      "category": "customization",
-      "size_mb": 20,
-      "description": "Віджети робочого столу"
-    },
-    {
-      "id": "steam",
-      "name": "Steam",
-      "winget_id": "Valve.Steam",
-      "category": "gaming",
-      "size_mb": 200,
-      "description": "Ігрова платформа Valve"
-    }
+    {"id": "edge",        "name": "Microsoft Edge",        "winget_id": "Microsoft.Edge",                    "category": "browser",      "size_mb": 130, "description": "Браузер від Microsoft"},
+    {"id": "chrome",      "name": "Google Chrome",         "winget_id": "Google.Chrome",                     "category": "browser",      "size_mb": 120, "description": "Популярний браузер"},
+    {"id": "firefox",     "name": "Mozilla Firefox",       "winget_id": "Mozilla.Firefox",                   "category": "browser",      "size_mb": 110, "description": "Відкритий браузер"},
+    {"id": "brave",       "name": "Brave Browser",         "winget_id": "Brave.Brave",                       "category": "browser",      "size_mb": 125, "description": "Браузер з блокуванням реклами"},
+    {"id": "7zip",        "name": "7-Zip",                 "winget_id": "7zip.7zip",                         "category": "utility",      "size_mb": 5,   "description": "Архіватор файлів"},
+    {"id": "vlc",         "name": "VLC Media Player",      "winget_id": "VideoLAN.VLC",                      "category": "media",        "size_mb": 80,  "description": "Медіаплеєр"},
+    {"id": "discord",     "name": "Discord",               "winget_id": "Discord.Discord",                   "category": "communication","size_mb": 130, "description": "Голосовий та текстовий чат"},
+    {"id": "spotify",     "name": "Spotify",               "winget_id": "Spotify.Spotify",                   "category": "media",        "size_mb": 200, "description": "Музичний стрімінг"},
+    {"id": "telegram",    "name": "Telegram Desktop",      "winget_id": "Telegram.TelegramDesktop",          "category": "communication","size_mb": 90,  "description": "Месенджер"},
+    {"id": "winrar",      "name": "WinRAR",                "winget_id": "RARLab.WinRAR",                     "category": "utility",      "size_mb": 10,  "description": "Архіватор RAR"},
+    {"id": "bitwarden",   "name": "Bitwarden",             "winget_id": "Bitwarden.Bitwarden",               "category": "security",     "size_mb": 90,  "description": "Менеджер паролів"},
+    {"id": "qbittorrent", "name": "qBittorrent",           "winget_id": "qBittorrent.qBittorrent",           "category": "utility",      "size_mb": 60,  "description": "Торрент-клієнт"},
+    {"id": "zoom",        "name": "Zoom",                  "winget_id": "Zoom.Zoom",                         "category": "communication","size_mb": 150, "description": "Відеоконференції"},
+    {"id": "notepadpp",   "name": "Notepad++",             "winget_id": "Notepad++.Notepad++",               "category": "editor",       "size_mb": 15,  "description": "Текстовий редактор"},
+    {"id": "everything",  "name": "Everything",            "winget_id": "voidtools.Everything",              "category": "utility",      "size_mb": 5,   "description": "Швидкий пошук файлів"},
+    {"id": "vscode",      "name": "Visual Studio Code",    "winget_id": "Microsoft.VisualStudioCode",        "category": "ide",          "size_mb": 150, "description": "Редактор коду"},
+    {"id": "git",         "name": "Git",                   "winget_id": "Git.Git",                           "category": "vcs",          "size_mb": 50,  "description": "Система контролю версій"},
+    {"id": "docker",      "name": "Docker Desktop",        "winget_id": "Docker.DockerDesktop",              "category": "devops",       "size_mb": 800, "description": "Контейнеризація"},
+    {"id": "python",      "name": "Python 3.12",           "winget_id": "Python.Python.3.12",                "category": "runtime",      "size_mb": 80,  "description": "Мова програмування"},
+    {"id": "nodejs",      "name": "Node.js LTS",           "winget_id": "OpenJS.NodeJS.LTS",                 "category": "runtime",      "size_mb": 90,  "description": "JavaScript runtime"},
+    {"id": "golang",      "name": "Go Language",           "winget_id": "GoLang.Go",                         "category": "runtime",      "size_mb": 120, "description": "Мова Go від Google"},
+    {"id": "postman",     "name": "Postman",               "winget_id": "Postman.Postman",                   "category": "dev-tools",    "size_mb": 160, "description": "Тестування API"},
+    {"id": "dbeaver",     "name": "DBeaver",               "winget_id": "dbeaver.dbeaver",                   "category": "database",     "size_mb": 200, "description": "Клієнт баз даних"},
+    {"id": "jetbrains",   "name": "JetBrains Toolbox",     "winget_id": "JetBrains.Toolbox",                 "category": "ide",          "size_mb": 100, "description": "Менеджер IDE JetBrains"},
+    {"id": "terminal",    "name": "Windows Terminal",      "winget_id": "Microsoft.WindowsTerminal",         "category": "terminal",     "size_mb": 30,  "description": "Сучасний термінал Windows"},
+    {"id": "jdk",         "name": "Oracle JDK 21",         "winget_id": "Oracle.JDK.21",                     "category": "runtime",      "size_mb": 300, "description": "Java Development Kit"},
+    {"id": "rust",        "name": "Rust",                  "winget_id": "Rustlang.Rustup",                   "category": "runtime",      "size_mb": 100, "description": "Мова програмування Rust"},
+    {"id": "llvm",        "name": "LLVM",                  "winget_id": "LLVM.LLVM",                         "category": "dev-tools",    "size_mb": 500, "description": "Компілятор LLVM"},
+    {"id": "putty",       "name": "PuTTY",                 "winget_id": "PuTTY.PuTTY",                       "category": "terminal",     "size_mb": 5,   "description": "SSH клієнт"},
+    {"id": "insomnia",    "name": "Insomnia",              "winget_id": "Insomnia.Insomnia",                  "category": "dev-tools",    "size_mb": 150, "description": "REST/GraphQL клієнт"},
+    {"id": "figma",       "name": "Figma",                 "winget_id": "Figma.Figma",                       "category": "design",       "size_mb": 180, "description": "UI/UX дизайн"},
+    {"id": "blender",     "name": "Blender",               "winget_id": "BlenderFoundation.Blender",         "category": "design",       "size_mb": 300, "description": "3D моделювання"},
+    {"id": "krita",       "name": "Krita",                 "winget_id": "KDE.Krita",                         "category": "design",       "size_mb": 250, "description": "Цифровий живопис"},
+    {"id": "inkscape",    "name": "Inkscape",              "winget_id": "Inkscape.Inkscape",                  "category": "design",       "size_mb": 120, "description": "Векторна графіка"},
+    {"id": "gimp",        "name": "GIMP",                  "winget_id": "GIMP.GIMP",                         "category": "design",       "size_mb": 200, "description": "Редактор зображень"},
+    {"id": "sharex",      "name": "ShareX",                "winget_id": "ShareX.ShareX",                     "category": "utility",      "size_mb": 40,  "description": "Скриншоти та запис екрану"},
+    {"id": "imageglass",  "name": "ImageGlass",            "winget_id": "DuongDieuPhap.ImageGlass",          "category": "media",        "size_mb": 30,  "description": "Переглядач зображень"},
+    {"id": "obs",         "name": "OBS Studio",            "winget_id": "OBSProject.OBSStudio",              "category": "streaming",    "size_mb": 250, "description": "Запис та стрімінг"},
+    {"id": "handbrake",   "name": "HandBrake",             "winget_id": "HandBrake.HandBrake",               "category": "media",        "size_mb": 80,  "description": "Конвертер відео"},
+    {"id": "audacity",    "name": "Audacity",              "winget_id": "Audacity.Audacity",                  "category": "media",        "size_mb": 50,  "description": "Редактор аудіо"},
+    {"id": "fontbase",    "name": "FontBase",              "winget_id": "FontBase.FontBase",                  "category": "design",       "size_mb": 90,  "description": "Менеджер шрифтів"},
+    {"id": "epicgames",   "name": "Epic Games Launcher",   "winget_id": "EpicGames.EpicGamesLauncher",       "category": "gaming",       "size_mb": 300, "description": "Лаунчер Epic / Unreal Engine"},
+    {"id": "powertoys",   "name": "Microsoft PowerToys",   "winget_id": "Microsoft.PowerToys",               "category": "customization","size_mb": 100, "description": "Утиліти продуктивності"},
+    {"id": "lively",      "name": "Lively Wallpaper",      "winget_id": "rocksdanister.LivelyWallpaper",     "category": "customization","size_mb": 80,  "description": "Живі шпалери"},
+    {"id": "files",       "name": "Files App",             "winget_id": "FilesApp.FilesApp",                 "category": "customization","size_mb": 60,  "description": "Сучасний файловий менеджер"},
+    {"id": "translucenttb","name": "TranslucentTB",        "winget_id": "CharlesMilette.TranslucentTB",      "category": "customization","size_mb": 5,   "description": "Прозора панель завдань"},
+    {"id": "eartrumpet",  "name": "EarTrumpet",            "winget_id": "File-New-Project.EarTrumpet",       "category": "customization","size_mb": 5,   "description": "Керування гучністю"},
+    {"id": "modernflyouts","name": "ModernFlyouts",        "winget_id": "ModernFlyouts.ModernFlyouts",       "category": "customization","size_mb": 10,  "description": "Сучасні спливаючі елементи"},
+    {"id": "autodarkmode","name": "Auto Dark Mode",        "winget_id": "Armin2208.WindowsAutoNightMode",    "category": "customization","size_mb": 10,  "description": "Автоматична темна тема"},
+    {"id": "nilesoft",    "name": "Nilesoft Shell",        "winget_id": "Nilesoft.Shell",                    "category": "customization","size_mb": 5,   "description": "Кастомне контекстне меню"},
+    {"id": "quicklook",   "name": "QuickLook",             "winget_id": "QL-Win.QuickLook",                  "category": "utility",      "size_mb": 10,  "description": "Швидкий перегляд файлів"},
+    {"id": "rainmeter",   "name": "Rainmeter",             "winget_id": "Rainmeter.Rainmeter",               "category": "customization","size_mb": 20,  "description": "Віджети робочого столу"},
+    {"id": "steam",       "name": "Steam",                 "winget_id": "Valve.Steam",                       "category": "gaming",       "size_mb": 200, "description": "Ігрова платформа Valve"}
   ]
 }
