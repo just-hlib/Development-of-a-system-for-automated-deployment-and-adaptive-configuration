@@ -1,22 +1,26 @@
-# client/tui.py — Textual TUI для AutoDeploy v2.0
+# client/tui.py — AutoDeploy v2.0 Textual TUI
 # Запуск: cd client && python tui.py
 from __future__ import annotations
 
 import os
 import sys
+from pathlib import Path
 from typing import Optional
 
 import httpx
 from rich.text import Text
 from textual import on, work
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, ScrollableContainer
+from textual.containers import Horizontal, ScrollableContainer, Vertical
 from textual.widgets import (
     Button,
     Checkbox,
     DataTable,
     Footer,
     Header,
+    Input,
+    Label,
+    LoadingIndicator,
     RichLog,
     Select,
     Static,
@@ -24,12 +28,14 @@ from textual.widgets import (
     TabPane,
 )
 
-# Дозволяємо запускати як `python tui.py` з папки client/
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from auditor import HardwareAuditor
 from engine import ExecutionEngine, is_admin
 
-SERVER = "http://localhost:8000"
+SERVER     = "http://localhost:8000"
+ADMIN_PASS = "admin123"   # change as needed
+CSS_PATH   = Path(__file__).parent / "autodeploy.tcss"
+
 PERSONAS = [
     ("developer", "💻 Developer"),
     ("gamer",     "🎮 Gamer"),
@@ -37,209 +43,203 @@ PERSONAS = [
     ("common",    "🌐 Common"),
 ]
 
-# ─── CYBERPUNK / HACKER CSS ───────────────────────────────────────────────────
-CYBERPUNK_CSS = """
-Screen {
-    background: #080c10;
-    color: #c8d6e5;
-}
-
-Header {
-    background: #0d1117;
-    color: #00ff9f;
-    text-style: bold;
-}
-
-Footer {
-    background: #0d1117;
-    color: #39ff14;
-}
-
-/* ── Tabs ── */
-TabbedContent {
-    background: #080c10;
-}
-
-TabPane {
-    padding: 1 2;
-    background: #080c10;
-}
-
-Tabs {
-    background: #0d1117;
-    border-bottom: solid #00ff9f;
-}
-
-Tab {
-    color: #445566;
-    padding: 1 3;
-}
-
-Tab:focus, Tab.-active {
-    color: #00ff9f;
-    text-style: bold;
-    background: #001a0f;
-}
-
-/* ── DataTable ── */
-DataTable {
-    height: auto;
-    max-height: 14;
-    border: solid #00ff9f;
-    background: #0d1117;
-    margin-bottom: 1;
-}
-
-DataTable > .datatable--header {
-    background: #001a0f;
-    color: #00ff9f;
-    text-style: bold;
-}
-
-DataTable > .datatable--cursor {
-    background: #002a18;
-    color: #00ff9f;
-}
-
-/* ── Buttons ── */
-Button {
-    margin: 0 1;
-    background: #001a0f;
-    color: #00ff9f;
-    border: solid #00ff9f;
-    min-width: 18;
-}
-
-Button:hover {
-    background: #003020;
-    border: solid #39ff14;
-    color: #39ff14;
-}
-
-Button.-primary  { background: #002a18; }
-Button.-success  { background: #001a30; color: #00aaff; border: solid #00aaff; }
-Button.-error    { background: #2a0000; color: #ff4444; border: solid #ff4444; }
-
-/* ── Misc ── */
-#profile-badge {
-    padding: 1 0;
-    text-style: bold;
-}
-
-#status-hint {
-    color: #334455;
-    padding: 0 0 1 0;
-}
-
-RichLog {
-    border: solid #00ff9f;
-    background: #050810;
-    height: 1fr;
-    scrollbar-color: #00ff9f;
-    scrollbar-background: #0d1117;
-}
-
-#app-container {
-    height: 1fr;
-    border: solid #00ff9f;
-    padding: 0 1;
-    background: #0d1117;
-}
-
-Select {
-    width: 28;
-}
-
-.controls {
-    height: 5;
-    align: left middle;
-    padding-bottom: 1;
-}
-
-.section-title {
-    color: #00ff9f;
-    text-style: bold;
-    padding: 0 0 1 0;
-}
-
-.divider {
-    color: #001a0f;
-    padding: 0;
-}
+# ── Fallback inline CSS (used when .tcss file is absent) ────────────────────
+_FALLBACK_CSS = """
+Screen { background: #0a0a0a; color: #c8d6e5; }
+Header { background: #0d1117; color: #00ff00; text-style: bold; }
+Footer { background: #0d1117; color: #008080; }
+Tabs   { background: #0d1117; border-bottom: solid #008080; }
+Tab    { color: #334455; padding: 1 3; }
+Tab:focus, Tab.-active { color: #00ff00; text-style: bold; background: #001400; }
+DataTable { border: solid #008080; background: #0d1117; height: auto; max-height: 14; }
+DataTable > .datatable--header { background: #001400; color: #00ff00; text-style: bold; }
+Button { margin: 0 1; background: #001400; color: #00ff00; border: solid #008080; }
+Button:hover { background: #002800; border: solid #00ff00; }
+Button.-primary { background: #001400; border: solid #00ff00; color: #00ff00; }
+Button.-success { background: #001a30; color: #00aaff; border: solid #00aaff; }
+Button.-error   { background: #2a0000; color: #ff4444; border: solid #ff4444; }
+Button.-warning { background: #1a1a00; color: #ffaa00; border: solid #ffaa00; }
+Input  { background: #0d1117; border: solid #008080; color: #c8d6e5; }
+Input:focus { border: solid #00ff00; }
+Select { width: 30; }
+RichLog { border: solid #008080; background: #050810; height: 1fr; }
+ScrollableContainer { border: solid #008080; background: #0d1117; height: 1fr; }
+Checkbox { background: #0a0a0a; color: #c8d6e5; padding: 0 1; }
+Checkbox.-on { color: #00ff00; }
+LoadingIndicator { color: #00ff00; }
+#profile-badge { padding: 1 0; text-style: bold; }
+#admin-status  { padding: 0 0 1 0; height: 3; }
+.section-title { color: #00ff00; text-style: bold; padding: 0 0 1 0; }
+.controls      { height: 5; align: left middle; padding-bottom: 1; }
+.admin-form    { border: solid #008080; padding: 1 2; background: #0d1117; margin-bottom: 1; }
+.admin-form-row { height: 3; align: left middle; margin-bottom: 1; }
+.form-label    { width: 14; color: #008080; text-style: bold; }
 """
 
 
 class AutoDeployTUI(App):
     """AutoDeploy v2.0 — Windows 11 Auto-Deploy Terminal UI."""
 
-    TITLE = "⚡ AutoDeploy v2.0 — Windows 11 Auto-Deploy System"
-    CSS = CYBERPUNK_CSS
+    TITLE = "⚡ AutoDeploy v2.0 — Windows 11"
+
+    # Use external .tcss if present; otherwise fall back to inline CSS
+    CSS_PATH = CSS_PATH if CSS_PATH.exists() else None
+    CSS      = "" if CSS_PATH.exists() else _FALLBACK_CSS
 
     BINDINGS = [
-        ("q",      "quit",       "Quit"),
-        ("a",      "run_audit",  "Audit"),
-        ("ctrl+l", "clear_log",  "Clear Log"),
-        ("d",      "goto_dash",  "Dashboard"),
-        ("p",      "goto_prov",  "Provisioning"),
-        ("l",      "goto_logs",  "Logs"),
+        ("q",       "quit",       "Quit"),
+        ("a",       "run_audit",  "Audit"),
+        ("ctrl+l",  "clear_log",  "Clear Log"),
+        ("d",       "goto_dash",  "Dashboard"),
+        ("p",       "goto_prov",  "Provisioning"),
+        ("l",       "goto_logs",  "Logs"),
+        ("ctrl+a",  "goto_admin", "Admin"),
     ]
 
-    # ── Internal state ─────────────────────────────────────────────────────
-    _hw_info: dict = {}
-    _profile: Optional[dict] = None
-    _all_manifests: dict = {}
+    _hw_info    : dict           = {}
+    _profile    : Optional[dict] = None
+    _manifests  : dict           = {}
+    _admin_authed: bool          = False
 
-    # ── Layout ─────────────────────────────────────────────────────────────
+    # ══════════════════════════════════════════════════════════════════════
+    # COMPOSE
+    # ══════════════════════════════════════════════════════════════════════
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         with TabbedContent(id="tabs"):
 
-            # ── TAB 1: Dashboard ──────────────────────────────────────────
+            # ── Tab 1: Dashboard ─────────────────────────────────────────
             with TabPane("🔍 Dashboard", id="tab-dash"):
                 yield Static("🖥  Hardware Audit", classes="section-title")
                 yield DataTable(id="hw-table", show_cursor=False)
                 yield Static("", id="profile-badge")
                 yield Static(
-                    "[dim]Press [bold]A[/bold] or click [bold]Run Audit[/bold] to refresh[/dim]",
+                    "[dim]Press [bold]A[/bold] or click "
+                    "[bold]Run Audit[/bold] to refresh.[/dim]",
                     id="status-hint",
                 )
                 with Horizontal(classes="controls"):
-                    yield Button("🔍 Run Audit", id="btn-audit")
+                    yield Button("🔍 Run Audit",     id="btn-audit")
+                    yield Button("📦 → Provisioning", id="btn-goto-provision",
+                                 variant="primary")
 
-            # ── TAB 2: Provisioning ───────────────────────────────────────
+            # ── Tab 2: Provisioning ──────────────────────────────────────
             with TabPane("📦 Provisioning", id="tab-provision"):
-                yield Static("👤  Select Persona & Load Apps", classes="section-title")
+                yield Static("👤  Select Persona & Apps", classes="section-title")
                 with Horizontal(classes="controls"):
                     yield Select(
                         [(v, lbl) for v, lbl in PERSONAS],
                         id="persona-select",
                         prompt="Choose persona...",
                     )
-                    yield Button("📥 Load Apps", id="btn-load")
-                    yield Button("🚀 Deploy",    id="btn-deploy", variant="success")
+                    yield Button("📥 Load Apps", id="btn-load",   variant="primary")
+                    yield Button("🚀 Deploy",     id="btn-deploy", variant="success")
+                    yield Button("✅ All",         id="btn-check-all")
+                    yield Button("☐ None",        id="btn-uncheck-all")
+
+                yield LoadingIndicator(id="prov-spinner")
                 with ScrollableContainer(id="app-container"):
                     yield Static(
                         "[dim]← Select a persona and click Load Apps[/dim]",
                         id="app-placeholder",
                     )
 
-            # ── TAB 3: Logs ───────────────────────────────────────────────
+            # ── Tab 3: Logs ──────────────────────────────────────────────
             with TabPane("📜 Logs", id="tab-logs"):
                 yield Static("📋  Live Output", classes="section-title")
+                with Horizontal(classes="controls"):
+                    yield Button("🗑 Clear",      id="btn-clear-log")
+                    yield Button("ℹ Copy hint",   id="btn-copy-hint",
+                                 variant="warning")
                 yield RichLog(id="log", highlight=True, markup=True)
+
+            # ── Tab 4: Admin ─────────────────────────────────────────────
+            with TabPane("🔐 Admin", id="tab-admin"):
+                yield Static("🔐  Admin Dashboard", classes="section-title")
+                yield Static("", id="admin-status")
+
+                with Vertical(id="admin-login-form", classes="admin-form"):
+                    yield Static("[dim]Enter admin password to unlock:[/dim]")
+                    with Horizontal(classes="admin-form-row"):
+                        yield Label("Password:", classes="form-label")
+                        yield Input(id="admin-pass-input", password=True,
+                                    placeholder="admin password...")
+                    with Horizontal(classes="admin-form-row"):
+                        yield Button("🔓 Unlock", id="btn-admin-login",
+                                     variant="warning")
+
+                with Vertical(id="admin-panel", classes="admin-form"):
+                    yield Static(
+                        "[bold cyan]➕  Add New App to manifests.json[/bold cyan]"
+                    )
+                    with Horizontal(classes="admin-form-row"):
+                        yield Label("App ID:",    classes="form-label")
+                        yield Input(id="new-app-id",   placeholder="e.g.  notepadpp")
+                    with Horizontal(classes="admin-form-row"):
+                        yield Label("Name:",      classes="form-label")
+                        yield Input(id="new-app-name", placeholder="e.g.  Notepad++")
+                    with Horizontal(classes="admin-form-row"):
+                        yield Label("Winget ID:", classes="form-label")
+                        yield Input(id="new-app-wid",  placeholder="e.g.  Notepad++.Notepad++")
+                    with Horizontal(classes="admin-form-row"):
+                        yield Label("Category:",  classes="form-label")
+                        yield Input(id="new-app-cat",  placeholder="e.g.  editor")
+                    with Horizontal(classes="admin-form-row"):
+                        yield Label("Size (MB):", classes="form-label")
+                        yield Input(id="new-app-size", placeholder="e.g.  15")
+                    with Horizontal(classes="admin-form-row"):
+                        yield Button("💾 Save App",     id="btn-save-app",
+                                     variant="success")
+                        yield Button("🔄 Refresh List", id="btn-reload-manifests")
+
+                    yield Static("\n[bold cyan]📋  Current Manifests[/bold cyan]")
+                    yield DataTable(id="manifest-table", show_cursor=True)
 
         yield Footer()
 
+    # ══════════════════════════════════════════════════════════════════════
+    # MOUNT
+    # ══════════════════════════════════════════════════════════════════════
+
     def on_mount(self) -> None:
-        """Init table columns and auto-run first audit."""
-        t = self.query_one("#hw-table", DataTable)
-        t.add_columns("Component", "Value", "Status")
+        self.query_one("#admin-panel").display  = False
+        self.query_one("#prov-spinner").display = False
+
+        hw = self.query_one("#hw-table", DataTable)
+        hw.add_columns("Component", "Value", "Status")
+
+        mt = self.query_one("#manifest-table", DataTable)
+        mt.add_columns("ID", "Name", "Winget ID", "Category", "MB")
+
         self._run_audit_worker()
 
-    # ═══════════════════════════════════════════════════════════════════════
-    #  TAB 1 — DASHBOARD
-    # ═══════════════════════════════════════════════════════════════════════
+    # ══════════════════════════════════════════════════════════════════════
+    # TAB NAVIGATION
+    # ══════════════════════════════════════════════════════════════════════
+
+    @on(TabbedContent.TabActivated)
+    def on_tab_activated(self, event: TabbedContent.TabActivated) -> None:
+        """Refresh admin table whenever the Admin tab is opened."""
+        tab_id = event.tab.id or ""
+        if "admin" in tab_id and self._admin_authed:
+            self._reload_manifests_worker()
+
+    def action_goto_dash(self)  -> None:
+        self.query_one(TabbedContent).active = "tab-dash"
+
+    def action_goto_prov(self)  -> None:
+        self.query_one(TabbedContent).active = "tab-provision"
+
+    def action_goto_logs(self)  -> None:
+        self.query_one(TabbedContent).active = "tab-logs"
+
+    def action_goto_admin(self) -> None:
+        self.query_one(TabbedContent).active = "tab-admin"
+
+    # ══════════════════════════════════════════════════════════════════════
+    # TAB 1 — DASHBOARD
+    # ══════════════════════════════════════════════════════════════════════
 
     def action_run_audit(self) -> None:
         self._run_audit_worker()
@@ -248,39 +248,38 @@ class AutoDeployTUI(App):
     def _on_audit_btn(self) -> None:
         self._run_audit_worker()
 
-    @work(thread=True, exclusive=True)
+    @on(Button.Pressed, "#btn-goto-provision")
+    def _on_goto_prov(self) -> None:
+        self.action_goto_prov()
+
+    @work(thread=True, exclusive=True, group="audit")
     def _run_audit_worker(self) -> None:
-        """Collect hardware info in background thread, update UI thread-safely."""
         log = self.query_one("#log", RichLog)
         self.call_from_thread(log.write, "[cyan]⏳ Running hardware audit...[/cyan]")
         try:
-            auditor = HardwareAuditor()
-            info = auditor.get_hardware_info()
-            profile = auditor.recommend_profile(info["ram_gb"])
+            info    = HardwareAuditor().get_hardware_info()
+            profile = HardwareAuditor().recommend_profile(info["ram_gb"])
             self._hw_info = info
-
             self.call_from_thread(self._refresh_hw_table, info, profile)
             self.call_from_thread(
                 log.write,
-                f"[green]✅ Audit complete — Recommended profile: [bold]{profile}[/bold][/green]",
+                f"[green]✅ Audit done — recommended: [bold]{profile}[/bold][/green]",
             )
             if not is_admin():
                 self.call_from_thread(
                     log.write,
                     "[yellow]⚠️  Not running as Administrator — "
-                    "PowerShell tweaks & powercfg may fail.[/yellow]",
+                    "powercfg/HKLM tweaks may fail.[/yellow]",
                 )
         except Exception as e:
-            self.call_from_thread(log.write, f"[red]❌ Audit failed: {e}[/red]")
+            self.call_from_thread(log.write, f"[red]❌ Audit error: {e}[/red]")
 
     def _refresh_hw_table(self, info: dict, profile: str) -> None:
-        """Rebuild the hardware DataTable (must be called from UI thread)."""
         t = self.query_one("#hw-table", DataTable)
         t.clear()
 
-        def s(val: float, good: float, warn: float,
-              rev: bool = False, u: str = "") -> Text:
-            """Coloured status cell."""
+        def cell(val: float, good: float, warn: float,
+                 rev: bool = False, u: str = "") -> Text:
             if rev:
                 c = "green" if val < good else ("yellow" if val < warn else "red")
             else:
@@ -288,36 +287,45 @@ class AutoDeployTUI(App):
             icon = "✅" if c == "green" else ("⚠️ " if c == "yellow" else "❌")
             return Text.from_markup(f"[{c}]{icon} {val}{u}[/{c}]")
 
-        t.add_row("🧠 RAM Total",   f"{info['ram_gb']} GB",
-                  s(info["ram_gb"], 4, 8, u=" GB"))
-        t.add_row("  └ Used",       f"{info['ram_used_percent']}%",
-                  s(info["ram_used_percent"], 50, 80, rev=True, u="%"))
-        t.add_row("⚡ CPU",          info["cpu_name"][:40], Text("OK", style="green"))
-        t.add_row("  └ Cores ph/lg",
-                  f"{info['cpu_cores_physical']} / {info['cpu_cores_logical']}",
-                  s(info["cpu_cores_physical"], 2, 4))
-        t.add_row("  └ Load",       f"{info['cpu_usage']}%",
-                  s(info["cpu_usage"], 30, 70, rev=True, u="%"))
-        t.add_row("💾 Disk Free",   f"{info['disk_free_gb']} GB",
-                  s(info["disk_free_gb"], 10, 50, u=" GB"))
-        t.add_row("  └ Used",       f"{info['disk_used_percent']}%",
-                  s(info["disk_used_percent"], 60, 85, rev=True, u="%"))
+        rows = [
+            ("🧠 RAM Total",      f"{info['ram_gb']} GB",
+             cell(info["ram_gb"], 4, 8, u=" GB")),
+            ("   └ Used",         f"{info['ram_used_percent']}%",
+             cell(info["ram_used_percent"], 50, 80, rev=True, u="%")),
+            ("⚡ CPU",             info["cpu_name"][:40],
+             Text("OK", style="green")),
+            ("   └ Cores ph/lg",  f"{info['cpu_cores_physical']} / "
+                                  f"{info['cpu_cores_logical']}",
+             cell(info["cpu_cores_physical"], 2, 4)),
+            ("   └ Load",         f"{info['cpu_usage']}%",
+             cell(info["cpu_usage"], 30, 70, rev=True, u="%")),
+            ("💾 Disk Free",      f"{info['disk_free_gb']} GB",
+             cell(info["disk_free_gb"], 10, 50, u=" GB")),
+            ("   └ Used",         f"{info['disk_used_percent']}%",
+             cell(info["disk_used_percent"], 60, 85, rev=True, u="%")),
+        ]
+        for r in rows:
+            t.add_row(*r)
 
         badge = self.query_one("#profile-badge", Static)
         if profile == "Ultimate":
             badge.update(
-                "[bold green]⚡ Profile: ULTIMATE — RAM ≥ 8 GB — "
-                "Full effects & Ultimate Performance enabled[/bold green]"
+                "[bold green]⚡ ULTIMATE — RAM ≥ 8 GB — Full effects enabled[/bold green]"
             )
         else:
             badge.update(
-                "[bold yellow]⚠️  Profile: LITE — RAM < 8 GB — "
-                "Heavy effects disabled[/bold yellow]"
+                "[bold yellow]⚠️  LITE — RAM < 8 GB — Heavy effects disabled[/bold yellow]"
             )
 
-    # ═══════════════════════════════════════════════════════════════════════
-    #  TAB 2 — PROVISIONING
-    # ═══════════════════════════════════════════════════════════════════════
+    # ══════════════════════════════════════════════════════════════════════
+    # TAB 2 — PROVISIONING (reactive)
+    # ══════════════════════════════════════════════════════════════════════
+
+    @on(Select.Changed, "#persona-select")
+    def _on_persona_changed(self, event: Select.Changed) -> None:
+        """Auto-load apps when persona changes."""
+        if event.value is not Select.BLANK:
+            self._load_apps_worker(str(event.value))
 
     @on(Button.Pressed, "#btn-load")
     def _on_load_btn(self) -> None:
@@ -327,12 +335,25 @@ class AutoDeployTUI(App):
             return
         self._load_apps_worker(str(sel.value))
 
-    @work(thread=True, exclusive=True)
+    @on(Button.Pressed, "#btn-check-all")
+    def _on_check_all(self) -> None:
+        for cb in self.query_one("#app-container").query(Checkbox):
+            cb.value = True
+
+    @on(Button.Pressed, "#btn-uncheck-all")
+    def _on_uncheck_all(self) -> None:
+        for cb in self.query_one("#app-container").query(Checkbox):
+            cb.value = False
+
+    @work(thread=True, exclusive=True, group="load")
     def _load_apps_worker(self, persona: str) -> None:
-        """Fetch profile + manifests from server in background thread."""
-        log = self.query_one("#log", RichLog)
+        spinner = self.query_one("#prov-spinner", LoadingIndicator)
+        log     = self.query_one("#log", RichLog)
+
+        self.call_from_thread(setattr, spinner, "display", True)
         self.call_from_thread(
-            log.write, f"[cyan]📥 Fetching profile [bold]{persona}[/bold] from server...[/cyan]"
+            log.write,
+            f"[cyan]📥 Loading profile [bold]{persona}[/bold]...[/cyan]",
         )
         try:
             with httpx.Client(timeout=10) as client:
@@ -340,58 +361,71 @@ class AutoDeployTUI(App):
                 mr = client.get(f"{SERVER}/manifests")
 
             if pr.status_code == 404:
-                self.call_from_thread(log.write, f"[red]❌ Persona '{persona}' not found[/red]")
+                self.call_from_thread(
+                    log.write,
+                    f"[red]❌ Persona '{persona}' not found on server.[/red]",
+                )
                 return
 
             profile   = pr.json()
             manifests = {m["id"]: m for m in mr.json()["manifests"]}
-
-            self._profile       = profile
-            self._all_manifests = manifests
+            self._profile   = profile
+            self._manifests = manifests
 
             self.call_from_thread(self._render_app_list, profile, manifests)
             self.call_from_thread(
                 log.write,
                 f"[green]✅ Loaded [bold]{len(profile['apps'])}[/bold] apps "
-                f"for [bold]{persona}[/bold][/green]",
+                f"for [bold]{profile['display_name']}[/bold][/green]",
             )
 
         except httpx.ConnectError:
             self.call_from_thread(
                 log.write,
-                "[red]❌ Cannot reach server!\n"
-                "   Start it: [bold]cd server && uvicorn main:app --reload --port 8000[/bold][/red]",
+                "[red]❌ Server unreachable!\n"
+                "   [dim]cd server && uvicorn main:app --reload --port 8000[/dim][/red]",
             )
             self.call_from_thread(self.notify, "Server offline!", severity="error")
         except Exception as e:
             self.call_from_thread(log.write, f"[red]❌ Load error: {e}[/red]")
+        finally:
+            self.call_from_thread(setattr, spinner, "display", False)
 
     def _render_app_list(self, profile: dict, manifests: dict) -> None:
-        """Build checkbox list for apps (UI thread)."""
+        """Rebuild checkbox list on the UI thread."""
         container = self.query_one("#app-container", ScrollableContainer)
-        container.remove_children()
+        for child in list(container.children):
+            child.remove()
 
-        prev_cat = None
+        prev_cat: Optional[str] = None
         for ref in profile["apps"]:
             aid = ref["id"]
             m   = manifests.get(aid, {})
             cat = m.get("category", "?")
 
-            # Category separator
             if cat != prev_cat:
                 container.mount(
                     Static(f"\n[bold cyan]── {cat.upper()} ──[/bold cyan]")
                 )
                 prev_cat = cat
 
-            name = m.get("name", aid)
-            size = m.get("size_mb", "?")
-            req  = " [dim](required)[/dim]" if ref["required"] else " [dim](optional)[/dim]"
-            label = f"[white]{name}[/white]  [dim]{size} MB[/dim]{req}"
-
-            container.mount(
-                Checkbox(label, value=ref["required"], id=f"app-{aid}")
+            name    = m.get("name", aid)
+            size    = m.get("size_mb", "?")
+            req_tag = (
+                " [bold green](required)[/bold green]"
+                if ref["required"] else " [dim](optional)[/dim]"
             )
+            container.mount(
+                Checkbox(
+                    f"[white]{name}[/white]  [dim]{size} MB[/dim]{req_tag}",
+                    value=ref["required"],
+                    id=f"app-{aid}",
+                )
+            )
+
+    # ══════════════════════════════════════════════════════════════════════
+    # TAB 2 — DEPLOY
+    # ══════════════════════════════════════════════════════════════════════
 
     @on(Button.Pressed, "#btn-deploy")
     def _on_deploy_btn(self) -> None:
@@ -399,18 +433,17 @@ class AutoDeployTUI(App):
             self.notify("⚠️  Load apps first!", severity="warning")
             return
 
-        # Collect checked apps
         selected = []
         for ref in self._profile["apps"]:
             aid = ref["id"]
             try:
                 cb = self.query_one(f"#app-{aid}", Checkbox)
                 if cb.value:
-                    m = self._all_manifests.get(aid, {})
+                    m = self._manifests.get(aid, {})
                     selected.append({
-                        "id":       aid,
+                        "id":        aid,
                         "winget_id": m.get("winget_id", ""),
-                        "required": ref["required"],
+                        "required":  ref["required"],
                     })
             except Exception:
                 pass
@@ -419,61 +452,48 @@ class AutoDeployTUI(App):
             self.notify("No apps selected!", severity="warning")
             return
 
-        # Switch to Logs tab for live output
+        # Redirect to Logs tab immediately
         self.query_one(TabbedContent).active = "tab-logs"
         self._deploy_worker(selected, self._profile)
 
-    # ═══════════════════════════════════════════════════════════════════════
-    #  TAB 3 — DEPLOY WORKER
-    # ═══════════════════════════════════════════════════════════════════════
-
-    @work(thread=True, exclusive=True)
+    @work(thread=True, exclusive=True, group="deploy")
     def _deploy_worker(self, apps: list, profile: dict) -> None:
-        """Full deploy pipeline: winget install → PS tweaks (background thread)."""
         log = self.query_one("#log", RichLog)
 
         def lw(msg: str) -> None:
             self.call_from_thread(log.write, msg)
 
-        lw("\n[bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]")
-        lw(f"[bold cyan]  🚀 DEPLOY: {profile['display_name']}[/bold cyan]")
-        lw("[bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]\n")
+        lw("\n[bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]")
+        lw(f"[bold cyan]  🚀  DEPLOY: {profile['display_name']}[/bold cyan]")
+        lw("[bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]\n")
 
-        # ── Admin warning ──────────────────────────────────────────────────
         if not is_admin():
-            lw("[yellow]⚠️  WARNING: Not running as Administrator![/yellow]")
-            lw("[yellow]   • powercfg (Ultimate Performance) will fail[/yellow]")
-            lw("[yellow]   • Registry tweaks may be blocked[/yellow]")
-            lw("[yellow]   Restart terminal as Admin for full deploy.\n[/yellow]")
+            lw("[yellow]⚠️  Not Administrator — HKLM/powercfg tweaks may fail[/yellow]\n")
 
         engine = ExecutionEngine(dry_run=False)
-        ok_count = failed_count = skip_count = 0
+        ok = fail = skip = 0
 
-        # ── Step 1: Install Apps ───────────────────────────────────────────
-        lw(f"[bold white]📦 Step 1/2 — Installing {len(apps)} apps[/bold white]")
-        lw("[dim]─────────────────────────────────────────[/dim]")
-
+        # Step 1 — Apps
+        lw(f"[bold white]📦  Step 1/2 — Installing {len(apps)} apps[/bold white]")
+        lw("[dim]───────────────────────────────────[/dim]")
         for app in apps:
             wid = app.get("winget_id", "")
             if not wid:
-                lw(f"  [yellow]⏭  Skipped {app['id']} (no Winget ID)[/yellow]")
-                skip_count += 1
+                lw(f"  [yellow]⏭  {app['id']} (no Winget ID)[/yellow]")
+                skip += 1
                 continue
-
-            lw(f"  [dim]⏳ {app['id']}  [{wid}]...[/dim]")
-            ok = engine.install_via_winget(wid)
-
-            if ok:
+            result = engine.install_via_winget(wid)
+            if result:
                 lw(f"  [green]✅ {app['id']}[/green]")
-                ok_count += 1
+                ok += 1
             elif app["required"]:
                 lw(f"  [red]❌ {app['id']} (required — FAILED)[/red]")
-                failed_count += 1
+                fail += 1
             else:
-                lw(f"  [yellow]⏭  {app['id']} (optional — skipped)[/yellow]")
-                skip_count += 1
+                lw(f"  [yellow]⏭  {app['id']} (optional)[/yellow]")
+                skip += 1
 
-        # ── Step 2: PowerShell Tweaks ──────────────────────────────────────
+        # Step 2 — Tweaks
         ps_map = {
             "apply_dark_theme":            engine.apply_dark_theme,
             "apply_light_theme":           engine.apply_light_theme,
@@ -487,48 +507,178 @@ class AutoDeployTUI(App):
             "set_color_calibration":       engine.set_color_calibration,
             "enable_night_light":          engine.enable_night_light,
         }
-
         scripts = profile.get("powershell_scripts", [])
-        lw(f"\n[bold white]⚙️  Step 2/2 — {len(scripts)} System Tweaks[/bold white]")
-        lw("[dim]─────────────────────────────────────────[/dim]")
-
+        lw(f"\n[bold white]⚙️   Step 2/2 — {len(scripts)} System Tweaks[/bold white]")
+        lw("[dim]───────────────────────────────────[/dim]")
         for name in scripts:
             fn = ps_map.get(name)
             if fn:
-                result = fn()
-                ico = "[green]✅" if result else "[red]❌"
-                end = "[/green]"  if result else "[/red]"
-                lw(f"  {ico} {name}{end}")
+                r   = fn()
+                tag = "[green]✅" if r else "[red]❌"
+                end = "[/green]" if r else "[/red]"
+                lw(f"  {tag} {name}{end}")
             else:
                 lw(f"  [yellow]⚠️  Unknown script: {name}[/yellow]")
 
-        # ── Summary ────────────────────────────────────────────────────────
-        lw("\n[bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]")
+        # Summary
+        lw("\n[bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]")
         lw(
-            f"[bold green]🎉 Deploy complete![/bold green]  "
-            f"[green]✅ {ok_count}[/green]  "
-            f"[red]❌ {failed_count}[/red]  "
-            f"[yellow]⏭  {skip_count}[/yellow]"
+            f"[bold green]🎉  Done![/bold green]  "
+            f"[green]✅ {ok}[/green]  [red]❌ {fail}[/red]  "
+            f"[yellow]⏭  {skip}[/yellow]"
         )
-        lw("[bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]\n")
+        lw("[bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]\n")
 
-        severity = "information" if failed_count == 0 else "warning"
+        sev = "information" if fail == 0 else "warning"
         self.call_from_thread(
             self.notify,
-            f"Deploy done! ✅{ok_count} installed  ❌{failed_count} failed",
-            severity=severity,
+            f"Deploy done!  ✅ {ok} installed  ❌ {fail} failed",
+            severity=sev,
         )
 
-    # ═══════════════════════════════════════════════════════════════════════
-    #  NAVIGATION ACTIONS
-    # ═══════════════════════════════════════════════════════════════════════
+    # ══════════════════════════════════════════════════════════════════════
+    # TAB 3 — LOGS
+    # ══════════════════════════════════════════════════════════════════════
 
-    def action_goto_dash(self)  -> None: self.query_one(TabbedContent).active = "tab-dash"
-    def action_goto_prov(self)  -> None: self.query_one(TabbedContent).active = "tab-provision"
-    def action_goto_logs(self)  -> None: self.query_one(TabbedContent).active = "tab-logs"
-    def action_clear_log(self)  -> None: self.query_one("#log", RichLog).clear()
+    @on(Button.Pressed, "#btn-clear-log")
+    def _on_clear_log(self) -> None:
+        self.query_one("#log", RichLog).clear()
+
+    @on(Button.Pressed, "#btn-copy-hint")
+    def _on_copy_hint(self) -> None:
+        self.notify(
+            "Scroll the log with the mouse, highlight text, then Ctrl+C.",
+            severity="information",
+        )
+
+    def action_clear_log(self) -> None:
+        self.query_one("#log", RichLog).clear()
+
+    # ══════════════════════════════════════════════════════════════════════
+    # TAB 4 — ADMIN DASHBOARD
+    # ══════════════════════════════════════════════════════════════════════
+
+    @on(Button.Pressed, "#btn-admin-login")
+    def _on_admin_login(self) -> None:
+        pwd = self.query_one("#admin-pass-input", Input).value.strip()
+        if pwd == ADMIN_PASS:
+            self._admin_authed = True
+            self.query_one("#admin-login-form").display = False
+            self.query_one("#admin-panel").display      = True
+            self.query_one("#admin-status", Static).update(
+                "[bold green]🔓 Authenticated as Admin[/bold green]"
+            )
+            self._reload_manifests_worker()
+        else:
+            self.query_one("#admin-status", Static).update(
+                "[bold red]❌ Incorrect password[/bold red]"
+            )
+            self.notify("Wrong password!", severity="error")
+
+    @on(Input.Submitted, "#admin-pass-input")
+    def _on_pass_submit(self, _: Input.Submitted) -> None:
+        self._on_admin_login()
+
+    @on(Button.Pressed, "#btn-save-app")
+    def _on_save_app(self) -> None:
+        if not self._admin_authed:
+            self.notify("Not authenticated!", severity="error")
+            return
+
+        app_id   = self.query_one("#new-app-id",   Input).value.strip()
+        name     = self.query_one("#new-app-name",  Input).value.strip()
+        wid      = self.query_one("#new-app-wid",   Input).value.strip()
+        category = self.query_one("#new-app-cat",   Input).value.strip()
+        size_raw = self.query_one("#new-app-size",  Input).value.strip()
+
+        if not all([app_id, name, wid, category]):
+            self.notify("Fill in ID, Name, Winget ID, Category!", severity="warning")
+            return
+
+        try:
+            size_mb: Optional[int] = int(size_raw) if size_raw else None
+        except ValueError:
+            self.notify("Size must be a number!", severity="warning")
+            return
+
+        self._save_app_worker(app_id, name, wid, category, size_mb)
+
+    @on(Button.Pressed, "#btn-reload-manifests")
+    def _on_reload_manifests(self) -> None:
+        self._reload_manifests_worker()
+
+    @work(thread=True, exclusive=True, group="admin-write")
+    def _save_app_worker(
+        self,
+        app_id: str, name: str, wid: str, category: str,
+        size_mb: Optional[int],
+    ) -> None:
+        """POST new app to server."""
+        log     = self.query_one("#log", RichLog)
+        payload = {
+            "id":          app_id,
+            "name":        name,
+            "winget_id":   wid,
+            "category":    category,
+            "size_mb":     size_mb,
+            "description": name,
+        }
+        self.call_from_thread(
+            log.write,
+            f"[cyan]💾 Saving new app [bold]{app_id}[/bold]...[/cyan]",
+        )
+        try:
+            with httpx.Client(timeout=10) as client:
+                r = client.post(f"{SERVER}/manifests", json=payload)
+            if r.status_code in (200, 201):
+                self.call_from_thread(
+                    log.write, f"[green]✅ App '{app_id}' saved![/green]"
+                )
+                self.call_from_thread(
+                    self.notify, f"App '{app_id}' added!", severity="information"
+                )
+                self.call_from_thread(self._clear_admin_form)
+                self._reload_manifests_worker()
+            else:
+                detail = r.json().get("detail", r.text)
+                self.call_from_thread(
+                    log.write,
+                    f"[red]❌ Server error {r.status_code}: {detail}[/red]",
+                )
+        except httpx.ConnectError:
+            self.call_from_thread(log.write, "[red]❌ Server offline![/red]")
+        except Exception as e:
+            self.call_from_thread(log.write, f"[red]❌ {e}[/red]")
+
+    @work(thread=True, exclusive=True, group="admin-read")
+    def _reload_manifests_worker(self) -> None:
+        """Refresh the manifests DataTable from server."""
+        try:
+            with httpx.Client(timeout=10) as client:
+                r = client.get(f"{SERVER}/manifests")
+            self.call_from_thread(
+                self._refresh_manifest_table, r.json()["manifests"]
+            )
+        except Exception:
+            pass  # silently skip if server not up
+
+    def _refresh_manifest_table(self, manifests: list) -> None:
+        t = self.query_one("#manifest-table", DataTable)
+        t.clear()
+        for m in manifests:
+            t.add_row(
+                m.get("id", ""),
+                m.get("name", ""),
+                m.get("winget_id", ""),
+                m.get("category", ""),
+                str(m.get("size_mb", "?")),
+            )
+
+    def _clear_admin_form(self) -> None:
+        for fid in ("#new-app-id", "#new-app-name",
+                    "#new-app-wid", "#new-app-cat", "#new-app-size"):
+            self.query_one(fid, Input).value = ""
 
 
-# ── Entry point ────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     AutoDeployTUI().run()

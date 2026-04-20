@@ -1,0 +1,264 @@
+/* client/autodeploy.tcss — Cyberpunk theme for AutoDeploy v2.0 */
+
+/* ── Global ──────────────────────────────────────────────── */
+Screen {
+    background: #0a0a0a;
+    color: #c8d6e5;
+    layers: base overlay notifications;
+}
+
+Header {
+    background: #0d1117;
+    color: #00ff00;
+    text-style: bold;
+}
+
+Footer {
+    background: #0d1117;
+    color: #008080;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────── */
+TabbedContent {
+    background: #0a0a0a;
+}
+
+TabPane {
+    padding: 1 2;
+    background: #0a0a0a;
+}
+
+Tabs {
+    background: #0d1117;
+    border-bottom: solid #008080;
+}
+
+Tab {
+    color: #334455;
+    padding: 1 3;
+    text-style: none;
+}
+
+Tab:focus, Tab.-active {
+    color: #00ff00;
+    text-style: bold;
+    background: #001400;
+}
+
+Tab:hover {
+    color: #008080;
+    background: #0d1117;
+}
+
+/* ── DataTable ────────────────────────────────────────────── */
+DataTable {
+    height: auto;
+    max-height: 14;
+    border: solid #008080;
+    background: #0d1117;
+    margin-bottom: 1;
+    scrollbar-color: #008080;
+    scrollbar-background: #0a0a0a;
+}
+
+DataTable > .datatable--header {
+    background: #001400;
+    color: #00ff00;
+    text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+    background: #001f1f;
+    color: #00ff00;
+}
+
+DataTable > .datatable--hover {
+    background: #001010;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+Button {
+    margin: 0 1;
+    background: #001400;
+    color: #00ff00;
+    border: solid #008080;
+    min-width: 18;
+    text-style: bold;
+}
+
+Button:hover {
+    background: #002800;
+    border: solid #00ff00;
+    color: #00ff00;
+}
+
+Button:focus {
+    border: solid #00ff00;
+    background: #001a00;
+}
+
+Button.-primary {
+    background: #001a00;
+    border: solid #00ff00;
+    color: #00ff00;
+}
+
+Button.-success {
+    background: #001a30;
+    color: #00aaff;
+    border: solid #00aaff;
+}
+
+Button.-success:hover {
+    background: #002a50;
+    border: solid #00ccff;
+}
+
+Button.-error {
+    background: #2a0000;
+    color: #ff4444;
+    border: solid #ff4444;
+}
+
+Button.-warning {
+    background: #1a1a00;
+    color: #ffaa00;
+    border: solid #ffaa00;
+}
+
+/* ── Input / Select ───────────────────────────────────────── */
+Input {
+    background: #0d1117;
+    border: solid #008080;
+    color: #c8d6e5;
+    padding: 0 1;
+}
+
+Input:focus {
+    border: solid #00ff00;
+    color: #00ff00;
+}
+
+Select {
+    width: 30;
+    background: #0d1117;
+    border: solid #008080;
+    color: #c8d6e5;
+}
+
+SelectOverlay {
+    background: #0d1117;
+    border: solid #00ff00;
+}
+
+SelectOverlay > OptionList--option-highlighted {
+    background: #001400;
+    color: #00ff00;
+}
+
+/* ── RichLog ──────────────────────────────────────────────── */
+RichLog {
+    border: solid #008080;
+    background: #050810;
+    height: 1fr;
+    scrollbar-color: #008080;
+    scrollbar-background: #0a0a0a;
+    padding: 0 1;
+}
+
+/* ── ScrollableContainer (app list) ──────────────────────── */
+ScrollableContainer {
+    border: solid #008080;
+    background: #0d1117;
+    height: 1fr;
+    scrollbar-color: #008080;
+    scrollbar-background: #0a0a0a;
+    padding: 0 1;
+}
+
+/* ── Checkbox ─────────────────────────────────────────────── */
+Checkbox {
+    background: #0a0a0a;
+    color: #c8d6e5;
+    padding: 0 1;
+}
+
+Checkbox:hover {
+    background: #001400;
+    color: #00ff00;
+}
+
+Checkbox.-on {
+    color: #00ff00;
+}
+
+/* ── LoadingIndicator ─────────────────────────────────────── */
+LoadingIndicator {
+    color: #00ff00;
+    background: #0a0a0a;
+}
+
+/* ── Panels / Labels ──────────────────────────────────────── */
+#profile-badge {
+    padding: 1 0;
+    text-style: bold;
+}
+
+#status-hint {
+    color: #334455;
+    padding: 0 0 1 0;
+}
+
+#admin-status {
+    padding: 0 0 1 0;
+    height: 3;
+}
+
+/* ── Layout helpers ───────────────────────────────────────── */
+.section-title {
+    color: #00ff00;
+    text-style: bold;
+    padding: 0 0 1 0;
+}
+
+.controls {
+    height: 5;
+    align: left middle;
+    padding-bottom: 1;
+}
+
+.admin-form {
+    height: auto;
+    border: solid #008080;
+    padding: 1 2;
+    background: #0d1117;
+    margin-bottom: 1;
+}
+
+.admin-form-row {
+    height: 3;
+    align: left middle;
+    margin-bottom: 1;
+}
+
+.form-label {
+    width: 14;
+    color: #008080;
+    text-style: bold;
+}
+
+/* ── ProgressBar ──────────────────────────────────────────── */
+ProgressBar > .bar--complete {
+    color: #00ff00;
+}
+
+ProgressBar > .bar--indeterminate {
+    color: #008080;
+}
+
+/* ── Notification ─────────────────────────────────────────── */
+Toast {
+    background: #0d1117;
+    border: solid #00ff00;
+    color: #00ff00;
+}
