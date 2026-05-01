@@ -153,8 +153,7 @@ SelectOverlay {
 
 SelectOverlay > OptionList--option-highlighted {
     background: #001400;
-    color: #00ff00;
-}
+    color: #00ff00;}
 
 /* ── RichLog ──────────────────────────────────────────────── */
 RichLog {
