@@ -55,11 +55,22 @@ function Write-Fail {
 # ─────────────────────────────────────────────────────────────
 #  STEP 0 — Self-elevate to Administrator
 # ─────────────────────────────────────────────────────────────
+$GIST_URL = "https://gist.githubusercontent.com/just-hlib/e19e9c7111d523c1e2795250926c8f6a/raw/7a2aee92bc8e7c2e82c469811eb27d1e7820c169/setup.ps1"
+
 function Assert-Admin {
     $me = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
     if (-not $me.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
         Write-Warn "Not running as Administrator — relaunching elevated..."
-        $elevArgs = "-NoProfile -ExecutionPolicy Bypass -Command `"irm '$MyInvocation.MyCommand.Path' | iex`""
+
+        # When run via "irm | iex" there is no file on disk, so
+        # $MyInvocation.MyCommand.Path is empty. We must use the known Gist URL.
+        if ($MyInvocation.MyCommand.Path) {
+            # Running from a saved .ps1 file — relaunch that file elevated
+            $elevArgs = "-NoProfile -ExecutionPolicy Bypass -File `"$($MyInvocation.MyCommand.Path)`""
+        } else {
+            # Running piped from irm — re-download and run elevated
+            $elevArgs = "-NoProfile -ExecutionPolicy Bypass -Command `"irm '$script:GIST_URL' | iex`""
+        }
         Start-Process powershell.exe -ArgumentList $elevArgs -Verb RunAs
         exit
     }
