@@ -213,9 +213,17 @@ function Get-Repo {
         Write-Info "Repository already exists — pulling latest changes..."
         Push-Location $INSTALL_DIR
         Write-Info "Running: git pull origin"
-        # No --quiet: show every git output line so the user sees progress
-        git pull origin 2>&1 | ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray }
-        $pullExit = $LASTEXITCODE   # capture before Pop-Location resets it
+
+        # PS 5.1 treats any git stderr output as a fatal error when
+        # ErrorActionPreference = Stop. Temporarily allow it.
+        $prevEAP = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        git pull origin --no-progress 2>&1 | ForEach-Object {
+            Write-Host "    $_" -ForegroundColor DarkGray
+        }
+        $pullExit = $LASTEXITCODE
+        $ErrorActionPreference = $prevEAP
+
         Pop-Location
         if ($pullExit -ne 0) {
             Write-Fail "git pull failed (exit $pullExit) — see output above."
@@ -246,12 +254,19 @@ function Get-Repo {
         # ── Clone ──────────────────────────────────────────────────────
         Write-Info "Cloning from $REPO_URL..."
         Write-Info "Running: git clone --depth 1 $REPO_URL $INSTALL_DIR"
-        # No --quiet: pipe both stdout and stderr so the user sees clone progress
-        git clone $REPO_URL $INSTALL_DIR --depth 1 2>&1 | ForEach-Object {
+
+        # PS 5.1 treats any git stderr output as a fatal error when
+        # ErrorActionPreference = Stop. Temporarily allow it.
+        $prevEAP = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        git clone $REPO_URL $INSTALL_DIR --depth 1 --no-progress 2>&1 | ForEach-Object {
             Write-Host "    $_" -ForegroundColor DarkGray
         }
-        if ($LASTEXITCODE -ne 0) {
-            Write-Fail "git clone failed (exit $LASTEXITCODE) — see output above."
+        $cloneExit = $LASTEXITCODE
+        $ErrorActionPreference = $prevEAP
+
+        if ($cloneExit -ne 0) {
+            Write-Fail "git clone failed (exit $cloneExit) — see output above."
         }
         Write-OK "Repository cloned"
     }
