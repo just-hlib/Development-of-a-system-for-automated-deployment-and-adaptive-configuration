@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
     AutoDeploy v2.0 — One-liner bootstrapper
-    Usage: irm https://YOUR_GIST_RAW_URL/setup.ps1 | iex
+    Usage: irm https://gist.githubusercontent.com/just-hlib/e19e9c7111d523c1e2795250926c8f6a/raw/7a2aee92bc8e7c2e82c469811eb27d1e7820c169/setup.ps1 | iex
 
 .DESCRIPTION
     Checks prerequisites (Python, Git), clones the repo,
@@ -16,7 +16,7 @@ $ErrorActionPreference = "Stop"
 # ─────────────────────────────────────────────────────────────
 #  CONFIGURATION  (change before hosting)
 # ─────────────────────────────────────────────────────────────
-$REPO_URL    = "https://github.com/just-hlib/Development-of-a-system-for-automated-deployment-and-adaptive-configuration-.git"
+$REPO_URL    = "https://github.com/just-hlib/Development-of-a-system-for-automated-deployment-and-adaptive-configuration.git"
 $INSTALL_DIR = "C:\AutoDeploy"
 $SERVER_PORT = 8000
 $MIN_PYTHON  = [Version]"3.10.0"
