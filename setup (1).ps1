@@ -43,7 +43,14 @@ function Write-Step   { param($n,$t) Write-Host "  [$n] $t" -ForegroundColor Yel
 function Write-OK     { param($t)    Write-Host "  [OK] $t" -ForegroundColor Green  }
 function Write-Info   { param($t)    Write-Host "  [..] $t" -ForegroundColor DarkCyan }
 function Write-Warn   { param($t)    Write-Host "  [!!] $t" -ForegroundColor Magenta }
-function Write-Fail   { param($t)    Write-Host "  [XX] $t" -ForegroundColor Red; exit 1 }
+function Write-Fail {
+    param($t)
+    Write-Host ""
+    Write-Host "  [XX] $t" -ForegroundColor Red
+    Write-Host ""
+    Read-Host "  Press Enter to close"
+    exit 1
+}
 
 # ─────────────────────────────────────────────────────────────
 #  STEP 0 — Self-elevate to Administrator
@@ -52,8 +59,8 @@ function Assert-Admin {
     $me = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
     if (-not $me.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
         Write-Warn "Not running as Administrator — relaunching elevated..."
-        $args = "-NoProfile -ExecutionPolicy Bypass -Command `"irm '$MyInvocation.MyCommand.Path' | iex`""
-        Start-Process powershell.exe -ArgumentList $args -Verb RunAs
+        $elevArgs = "-NoProfile -ExecutionPolicy Bypass -Command `"irm '$MyInvocation.MyCommand.Path' | iex`""
+        Start-Process powershell.exe -ArgumentList $elevArgs -Verb RunAs
         exit
     }
     Write-OK "Running as Administrator"
@@ -158,20 +165,83 @@ function Assert-Git {
 function Get-Repo {
     Write-Step 5 "Setting up repository at $INSTALL_DIR..."
 
+    # ── Prevent Git from hanging on credential prompts ─────────────────────
+    # GIT_TERMINAL_PROMPT=0 → git fails immediately instead of waiting for input.
+    # GIT_ASKPASS=echo      → if anything still asks, echo returns empty string.
+    $env:GIT_TERMINAL_PROMPT = "0"
+    $env:GIT_ASKPASS         = "echo"
+
+    # ── Pre-flight: verify repo URL is reachable & public ──────────────────
+    $checkUrl = $REPO_URL -replace '\.git$', ''
+    Write-Info "Pre-flight check: $checkUrl"
+    try {
+        $resp = Invoke-WebRequest -Uri $checkUrl -UseBasicParsing -Method Head `
+                    -TimeoutSec 10 -ErrorAction Stop
+        Write-OK "Repository reachable (HTTP $($resp.StatusCode))"
+    } catch {
+        $httpCode = 0
+        if ($_.Exception.PSObject.Properties['Response'] -and $_.Exception.Response) {
+            $httpCode = [int]$_.Exception.Response.StatusCode
+        }
+        if ($httpCode -eq 404) {
+            Write-Warn "Repository returned HTTP 404!"
+            Write-Host ""
+            Write-Host "  The repository may be PRIVATE or the URL may be wrong." -ForegroundColor Yellow
+            Write-Host "  URL: $REPO_URL" -ForegroundColor DarkGray
+            Write-Host "  If private, configure Git credentials before re-running." -ForegroundColor Yellow
+            Write-Host ""
+            Write-Fail "Cannot clone a private/missing repo without credentials."
+        } else {
+            # Network hiccup or other HTTP error — warn but still try git
+            Write-Warn "Pre-flight failed ($($_.Exception.Message)) — attempting git anyway..."
+        }
+    }
+
+    # ── Handle existing directory ──────────────────────────────────────────
     if (Test-Path "$INSTALL_DIR\.git") {
         Write-Info "Repository already exists — pulling latest changes..."
         Push-Location $INSTALL_DIR
-        git pull --quiet
+        Write-Info "Running: git pull origin"
+        # No --quiet: show every git output line so the user sees progress
+        git pull origin 2>&1 | ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray }
+        $pullExit = $LASTEXITCODE   # capture before Pop-Location resets it
         Pop-Location
-        Write-OK "Repository updated"
-    } else {
-        if (Test-Path $INSTALL_DIR) {
-            Write-Warn "$INSTALL_DIR exists but is not a git repo — removing..."
-            Remove-Item -Recurse -Force $INSTALL_DIR
+        if ($pullExit -ne 0) {
+            Write-Fail "git pull failed (exit $pullExit) — see output above."
         }
+        Write-OK "Repository updated"
+
+    } else {
+        # ── Directory exists but is NOT a git repo ──────────────────────
+        if (Test-Path $INSTALL_DIR) {
+            Write-Warn "$INSTALL_DIR exists but is not a git repository."
+            $choice = Read-Host "  Delete it and re-clone? [Y/N]"
+            if ($choice -notmatch '^[Yy]') {
+                Write-Fail "Aborted — remove '$INSTALL_DIR' manually, then re-run."
+            }
+            Write-Info "Removing $INSTALL_DIR..."
+            try {
+                Remove-Item -Recurse -Force $INSTALL_DIR -ErrorAction Stop
+                Write-OK "Directory removed"
+            } catch {
+                Write-Fail (
+                    "Could not delete '$INSTALL_DIR' — it may be locked by another process.`n" +
+                    "  Close any programs using it, then re-run.`n" +
+                    "  Error: $($_.Exception.Message)"
+                )
+            }
+        }
+
+        # ── Clone ──────────────────────────────────────────────────────
         Write-Info "Cloning from $REPO_URL..."
-        git clone $REPO_URL $INSTALL_DIR --depth 1 --quiet
-        if ($LASTEXITCODE -ne 0) { Write-Fail "git clone failed" }
+        Write-Info "Running: git clone --depth 1 $REPO_URL $INSTALL_DIR"
+        # No --quiet: pipe both stdout and stderr so the user sees clone progress
+        git clone $REPO_URL $INSTALL_DIR --depth 1 2>&1 | ForEach-Object {
+            Write-Host "    $_" -ForegroundColor DarkGray
+        }
+        if ($LASTEXITCODE -ne 0) {
+            Write-Fail "git clone failed (exit $LASTEXITCODE) — see output above."
+        }
         Write-OK "Repository cloned"
     }
 }

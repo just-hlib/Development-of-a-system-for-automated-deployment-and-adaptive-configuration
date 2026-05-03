@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -32,9 +33,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from auditor import HardwareAuditor
 from engine import ExecutionEngine, is_admin
 
-SERVER     = "http://localhost:8000"
-ADMIN_PASS = "admin123"   # change as needed
-CSS_PATH   = Path(__file__).parent / "autodeploy.tcss"
+SERVER        = "http://localhost:8000"
+ADMIN_PASS    = "admin123"   # change as needed
+_TCSS_FILE    = Path(__file__).parent / "autodeploy.tcss"
+_MAX_RETRIES  = 4
+_RETRY_DELAY  = 2.0  # seconds between server connection attempts
 
 PERSONAS = [
     ("developer", "💻 Developer"),
@@ -83,8 +86,8 @@ class AutoDeployTUI(App):
     TITLE = "⚡ AutoDeploy v2.0 — Windows 11"
 
     # Use external .tcss if present; otherwise fall back to inline CSS
-    CSS_PATH = CSS_PATH if CSS_PATH.exists() else None
-    CSS      = "" if CSS_PATH.exists() else _FALLBACK_CSS
+    CSS_PATH = _TCSS_FILE if _TCSS_FILE.exists() else None
+    CSS      = "" if _TCSS_FILE.exists() else _FALLBACK_CSS
 
     BINDINGS = [
         ("q",       "quit",       "Quit"),
@@ -355,11 +358,38 @@ class AutoDeployTUI(App):
             log.write,
             f"[cyan]📥 Loading profile [bold]{persona}[/bold]...[/cyan]",
         )
-        try:
-            with httpx.Client(timeout=10) as client:
-                pr = client.get(f"{SERVER}/profile/{persona}")
-                mr = client.get(f"{SERVER}/manifests")
+        # ── Connect with retry ──────────────────────────────────────────
+        pr = mr = None
+        connected = False
+        for attempt in range(1, _MAX_RETRIES + 1):
+            try:
+                with httpx.Client(timeout=10) as client:
+                    pr = client.get(f"{SERVER}/profile/{persona}")
+                    mr = client.get(f"{SERVER}/manifests")
+                connected = True
+                break
+            except httpx.ConnectError:
+                if attempt < _MAX_RETRIES:
+                    self.call_from_thread(
+                        log.write,
+                        f"[yellow]⏳ Server offline — retry {attempt}/{_MAX_RETRIES} "
+                        f"in {int(_RETRY_DELAY)}s...[/yellow]",
+                    )
+                    time.sleep(_RETRY_DELAY)
+            except Exception as e:
+                self.call_from_thread(log.write, f"[red]❌ Load error: {e}[/red]")
+                return
 
+        if not connected:
+            self.call_from_thread(
+                log.write,
+                f"[red]❌ Server unreachable after {_MAX_RETRIES} attempts!\n"
+                "   [dim]Start it: cd server && uvicorn main:app --port 8000[/dim][/red]",
+            )
+            self.call_from_thread(self.notify, "Server offline!", severity="error")
+            return
+
+        try:
             if pr.status_code == 404:
                 self.call_from_thread(
                     log.write,
@@ -378,14 +408,6 @@ class AutoDeployTUI(App):
                 f"[green]✅ Loaded [bold]{len(profile['apps'])}[/bold] apps "
                 f"for [bold]{profile['display_name']}[/bold][/green]",
             )
-
-        except httpx.ConnectError:
-            self.call_from_thread(
-                log.write,
-                "[red]❌ Server unreachable!\n"
-                "   [dim]cd server && uvicorn main:app --reload --port 8000[/dim][/red]",
-            )
-            self.call_from_thread(self.notify, "Server offline!", severity="error")
         except Exception as e:
             self.call_from_thread(log.write, f"[red]❌ Load error: {e}[/red]")
         finally:

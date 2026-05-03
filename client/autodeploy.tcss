@@ -53,12 +53,21 @@ Tab:hover {
 /* ── DataTable ────────────────────────────────────────────── */
 DataTable {
     height: auto;
-    max-height: 14;
+    max-height: 20;
     border: solid #008080;
     background: #0d1117;
     margin-bottom: 1;
     scrollbar-color: #008080;
     scrollbar-background: #0a0a0a;
+}
+
+#hw-table {
+    max-height: 12;
+}
+
+#manifest-table {
+    max-height: 18;
+    height: 1fr;
 }
 
 DataTable > .datatable--header {
@@ -214,12 +223,6 @@ LoadingIndicator {
 }
 
 /* ── Layout helpers ───────────────────────────────────────── */
-.section-title {
-    color: #00ff00;
-    text-style: bold;
-    padding: 0 0 1 0;
-}
-
 .controls {
     height: 5;
     align: left middle;
@@ -228,7 +231,7 @@ LoadingIndicator {
 
 .admin-form {
     height: auto;
-    border: solid #008080;
+    border: double #008080;
     padding: 1 2;
     background: #0d1117;
     margin-bottom: 1;
@@ -260,4 +263,29 @@ Toast {
     background: #0d1117;
     border: solid #00ff00;
     color: #00ff00;
+}
+
+Toast.-information {
+    border: solid #008080;
+    color: #00cccc;
+}
+
+Toast.-warning {
+    border: solid #ffaa00;
+    color: #ffaa00;
+    background: #1a1400;
+}
+
+Toast.-error {
+    border: solid #ff4444;
+    color: #ff4444;
+    background: #1a0000;
+}
+
+/* ── Section titles ───────────────────────────────────────── */
+.section-title {
+    color: #00ff00;
+    text-style: bold;
+    padding: 0 0 1 0;
+    border-bottom: solid #008080;
 }

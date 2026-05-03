@@ -435,10 +435,23 @@ class ExecutionEngine:
             console.print(
                 "[yellow]⚠️  enable_ultimate_performance requires Admin[/yellow]"
             )
-        return self.run_powershell(
-            "powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61",
-            "Ultimate Performance"
+        # Check if an Ultimate Performance scheme already exists before duplicating.
+        # powercfg -list lines look like:
+        #   Power Scheme GUID: <guid>  (Ultimate Performance)
+        script = (
+            "$list = powercfg -list; "
+            "$existing = $list | Where-Object { $_ -match 'Ultimate Performance' }; "
+            "if ($existing) { "
+            "    $guid = [regex]::Match($existing, "
+            "        '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'"
+            "    ).Value; "
+            "    if ($guid) { powercfg -setactive $guid; "
+            "        Write-Host 'Ultimate Performance already present — activated.' } "
+            "} else { "
+            "    powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 "
+            "}"
         )
+        return self.run_powershell(script, "Ultimate Performance")
 
     def optimize_gaming_performance(self) -> bool:
         script = (
