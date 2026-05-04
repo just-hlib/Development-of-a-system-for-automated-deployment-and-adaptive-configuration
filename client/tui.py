@@ -89,13 +89,20 @@ class AutoDeployTUI(App):
     CSS      = "" if _TCSS_FILE.exists() else _FALLBACK_CSS
 
     BINDINGS = [
-        Binding("q",      "quit",       "Quit",        priority=True),
-        Binding("a",      "run_audit",  "Audit",        priority=True),
-        Binding("ctrl+l", "clear_log",  "Clear Log",    priority=True),
-        Binding("d",      "goto_dash",  "Dashboard",    priority=True),
-        Binding("p",      "goto_prov",  "Provisioning", priority=True),
-        Binding("l",      "goto_logs",  "Logs",         priority=True),
-        Binding("ctrl+a", "goto_admin", "Admin",        priority=True),
+        # F-keys work regardless of which widget has focus (Select, Input, etc.)
+        Binding("q",      "quit",       "Quit",         priority=True),
+        Binding("f1",     "goto_dash",  "F1 Dashboard", priority=True),
+        Binding("f2",     "goto_prov",  "F2 Provision", priority=True),
+        Binding("f3",     "goto_logs",  "F3 Logs",      priority=True),
+        Binding("f4",     "goto_admin", "F4 Admin",     priority=True),
+        Binding("ctrl+r", "run_audit",  "^R Audit",     priority=True),
+        Binding("ctrl+l", "clear_log",  "^L Clear",     priority=True),
+        # Single-letter shortcuts still work when no input widget is focused
+        Binding("d",      "goto_dash",  "Dashboard",    priority=True, show=False),
+        Binding("p",      "goto_prov",  "Provisioning", priority=True, show=False),
+        Binding("l",      "goto_logs",  "Logs",         priority=True, show=False),
+        Binding("a",      "run_audit",  "Audit",        priority=True, show=False),
+        Binding("ctrl+a", "goto_admin", "Admin",        priority=True, show=False),
     ]
 
     _hw_info    : dict           = {}
@@ -395,10 +402,11 @@ class AutoDeployTUI(App):
 
     def _render_app_list(self, profile: dict, manifests: dict) -> None:
         """Rebuild checkbox list on the UI thread."""
-        container = self.query_one("#app-container", ScrollableContainer)
-        for child in list(container.children):
-            child.remove()
+        container = self.query_one("#app-container")
+        container.remove_children()  # atomic bulk remove (Textual 8.x safe)
 
+        # Build all widgets first, then mount once — avoids async remove/mount races
+        new_widgets = []
         prev_cat: Optional[str] = None
         for ref in profile["apps"]:
             aid = ref["id"]
@@ -406,7 +414,7 @@ class AutoDeployTUI(App):
             cat = m.get("category", "?")
 
             if cat != prev_cat:
-                container.mount(
+                new_widgets.append(
                     Static(f"\n[bold cyan]── {cat.upper()} ──[/bold cyan]")
                 )
                 prev_cat = cat
@@ -417,13 +425,18 @@ class AutoDeployTUI(App):
                 " [bold green](required)[/bold green]"
                 if ref["required"] else " [dim](optional)[/dim]"
             )
-            container.mount(
+            new_widgets.append(
                 Checkbox(
                     f"[white]{name}[/white]  [dim]{size} MB[/dim]{req_tag}",
                     value=ref["required"],
                     id=f"app-{aid}",
                 )
             )
+
+        if new_widgets:
+            container.mount(*new_widgets)  # single bulk mount
+        else:
+            container.mount(Static("[dim]No apps found for this persona.[/dim]"))
 
     # ══════════════════════════════════════════════════════════════════════
     # TAB 2 — DEPLOY
