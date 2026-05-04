@@ -91,12 +91,12 @@ class AutoDeployTUI(App):
     BINDINGS = [
         # F-keys work regardless of which widget has focus (Select, Input, etc.)
         Binding("q",      "quit",       "Quit",         priority=True),
-        Binding("f1",     "goto_dash",  "F1 Dashboard", priority=True),
-        Binding("f2",     "goto_prov",  "F2 Provision", priority=True),
-        Binding("f3",     "goto_logs",  "F3 Logs",      priority=True),
-        Binding("f4",     "goto_admin", "F4 Admin",     priority=True),
-        Binding("ctrl+r", "run_audit",  "^R Audit",     priority=True),
-        Binding("ctrl+l", "clear_log",  "^L Clear",     priority=True),
+        Binding("f1",     "goto_dash",  "Dashboard",    priority=True),
+        Binding("f2",     "goto_prov",  "Provision",    priority=True),
+        Binding("f3",     "goto_logs",  "Logs",         priority=True),
+        Binding("f4",     "goto_admin", "Admin",        priority=True),
+        Binding("ctrl+r", "run_audit",  "Audit",        priority=True),
+        Binding("ctrl+l", "clear_log",  "Clear Log",    priority=True),
         # Single-letter shortcuts still work when no input widget is focused
         Binding("d",      "goto_dash",  "Dashboard",    priority=True, show=False),
         Binding("p",      "goto_prov",  "Provisioning", priority=True, show=False),
@@ -138,7 +138,7 @@ class AutoDeployTUI(App):
                 yield Static("👤  Select Persona & Apps", classes="section-title")
                 with Horizontal(classes="controls"):
                     yield Select(
-                        [(v, lbl) for v, lbl in PERSONAS],
+                        [(lbl, v) for v, lbl in PERSONAS],  # Textual 8.x: (label, value)
                         id="persona-select",
                         prompt="Choose persona...",
                     )
@@ -333,13 +333,13 @@ class AutoDeployTUI(App):
     @on(Select.Changed, "#persona-select")
     def _on_persona_changed(self, event: Select.Changed) -> None:
         """Auto-load apps when persona changes."""
-        if event.value is not Select.BLANK:
+        if event.value is not Select.NULL:
             self._load_apps_worker(str(event.value))
 
     @on(Button.Pressed, "#btn-load")
     def _on_load_btn(self) -> None:
         sel = self.query_one("#persona-select", Select)
-        if sel.value is Select.BLANK:
+        if sel.value is Select.NULL:
             self.notify("⚠️  Select a persona first!", severity="warning")
             return
         self._load_apps_worker(str(sel.value))
