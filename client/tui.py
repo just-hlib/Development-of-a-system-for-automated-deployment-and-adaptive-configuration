@@ -11,6 +11,7 @@ import httpx
 from rich.text import Text
 from textual import on, work
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.containers import Horizontal, ScrollableContainer, Vertical
 from textual.widgets import (
     Button,
@@ -34,7 +35,7 @@ from engine import ExecutionEngine, is_admin
 
 SERVER     = "http://localhost:8000"
 ADMIN_PASS = "admin123"   # change as needed
-CSS_PATH   = Path(__file__).parent / "autodeploy.tcss"
+_TCSS_FILE = Path(__file__).parent / "autodeploy.tcss"
 
 PERSONAS = [
     ("developer", "💻 Developer"),
@@ -81,19 +82,20 @@ class AutoDeployTUI(App):
     """AutoDeploy v2.0 — Windows 11 Auto-Deploy Terminal UI."""
 
     TITLE = "⚡ AutoDeploy v2.0 — Windows 11"
+    ENABLE_COMMAND_PALETTE = False   # disable ^p palette shortcut
 
     # Use external .tcss if present; otherwise fall back to inline CSS
-    CSS_PATH = CSS_PATH if CSS_PATH.exists() else None
-    CSS      = "" if CSS_PATH.exists() else _FALLBACK_CSS
+    CSS_PATH = _TCSS_FILE if _TCSS_FILE.exists() else None
+    CSS      = "" if _TCSS_FILE.exists() else _FALLBACK_CSS
 
     BINDINGS = [
-        ("q",       "quit",       "Quit"),
-        ("a",       "run_audit",  "Audit"),
-        ("ctrl+l",  "clear_log",  "Clear Log"),
-        ("d",       "goto_dash",  "Dashboard"),
-        ("p",       "goto_prov",  "Provisioning"),
-        ("l",       "goto_logs",  "Logs"),
-        ("ctrl+a",  "goto_admin", "Admin"),
+        Binding("q",      "quit",       "Quit",        priority=True),
+        Binding("a",      "run_audit",  "Audit",        priority=True),
+        Binding("ctrl+l", "clear_log",  "Clear Log",    priority=True),
+        Binding("d",      "goto_dash",  "Dashboard",    priority=True),
+        Binding("p",      "goto_prov",  "Provisioning", priority=True),
+        Binding("l",      "goto_logs",  "Logs",         priority=True),
+        Binding("ctrl+a", "goto_admin", "Admin",        priority=True),
     ]
 
     _hw_info    : dict           = {}
