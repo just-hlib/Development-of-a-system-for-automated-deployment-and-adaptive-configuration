@@ -10,11 +10,15 @@ Header {
     background: #0d1117;
     color: #00ff00;
     text-style: bold;
+    height: 1;
+    dock: top;
 }
 
 Footer {
     background: #0d1117;
     color: #008080;
+    height: 1;
+    dock: bottom;
 }
 
 /* ── Tabs ─────────────────────────────────────────────────── */
@@ -176,8 +180,8 @@ RichLog {
     padding: 0 1;
 }
 
-/* ── ScrollableContainer (app list) ──────────────────────── */
-ScrollableContainer {
+/* ── App list container ───────────────────────────────────── */
+#app-container {
     border: solid #008080;
     background: #0d1117;
     height: 1fr;
